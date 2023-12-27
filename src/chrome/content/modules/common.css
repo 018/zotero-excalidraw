@@ -1,0 +1,30 @@
+:root {
+    --el-menu-item-height: 50px;
+}
+
+
+.vcenter {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.hcenter {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.single-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fill {
+    width: 100%;
+}
+
+.text-color-placeholder {
+    color: var(--el-text-color-placeholder);
+}

@@ -1,0 +1,2617 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title data-l10n-id="zotero-excalidraw-title"></title>
+  <meta charset="UTF-8" />
+  <script src="chrome://zotero/content/include.js"></script>
+  <link rel="localization" href="zotero-excalidraw.ftl" />
+  <link rel="stylesheet" href="../modules/common.css">
+  <script src="../modules/babel.min.js"></script>
+  <script src="../modules/react.production.min.js"></script>
+  <script src="../modules/react-dom.production.min.js"></script>
+  <script src="../modules/dayjs.min.js"></script>
+  <script src="../modules/antd.min.js"></script>
+  <!-- <script src="../modules/babel.js"></script>
+  <script src="../modules/react.development.js"></script>
+  <script src="../modules/react-dom.development.js"></script>
+  <script src="../modules/dayjs.min.js"></script>
+  <script src="../modules/antd.min.js"></script> -->
+  
+  <link rel="stylesheet" href="../modules/reset.min.css">
+  <script>
+    window.EXCALIDRAW_ASSET_PATH = "../modules/";
+  </script>
+  <!-- <script type="text/javascript" src="../modules/excalidraw.development.js"></script> -->
+  <script type="text/javascript" src="../modules/excalidraw.production.min-0.16.1.js"></script>
+  <script src="./excalidraw-utils.js"></script>
+  <style>
+    #app {
+      height: 100%;
+    }
+
+    .App {
+      font-family: sans-serif;
+      background-color: #EEF0F3;
+      font-size: 12px;
+      height: 100%;
+    }
+
+    @font-face {
+      font-family: "Virgil";
+      src: url("chrome://zotero-excalidraw/content/modules/excalidraw-assets/chinese.ttf");
+      font-display: swap;
+    }
+
+    .loading {
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    #resizer {
+      position: absolute;
+      inset-inline-start: var(--width);
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      cursor: ew-resize;
+      z-index: 1;
+      background-color: #ECECEC;
+    }
+
+    .excalidraw .button__icon {
+      width: 2.3rem;
+      height: 2.3rem;
+      color: var(--icon-fill-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: var(--border-radius-lg);
+    }
+
+    .excalidraw .button__icon.trigger {
+      background: var(--color-primary);
+    }
+
+    #root {
+      height: 100%;
+    }
+
+    .tree {
+      background: #D3D8E1;
+      border-radius: 0 !important;
+      font-size: 12px !important;
+    }
+
+    .ant-tree-node-content-wrapper {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .excalidraw {
+      --color-primary: #4D7FC5;
+    }
+
+    .excalidraw.theme--dark {
+      --color-primary: #aabedb;
+    }
+
+    .content {
+      background-color: #ffffff;
+      text-align: center;
+    }
+
+    .icon {
+      height: 10px;
+      width: 10px;
+    }
+
+    .item-icon {
+      height: 13px;
+      width: 13px;
+    }
+
+    .button-icon {
+      height: 15px;
+      width: 15px;
+    }
+
+    .button-zotero-icon {
+      height: 12px;
+      width: 12px;
+    }
+
+    .logo-icon-400 {
+      width: 400px;
+    }
+
+    .logo-icon-300 {
+      width: 300px;
+      width: 300px;
+    }
+
+    .logo-icon-200 {
+      width: 200px;
+      width: 200px;
+    }
+
+    .logo-icon-100 {
+      width: 100px;
+      width: 100px;
+    }
+
+    .zotero-button-icon {
+      height: 13px;
+      width: 13px;
+    }
+
+    .excalidraw-wrapper {
+      height: 100%;
+    }
+
+    .fill-width {
+      width: 100%;
+      overflow: auto;
+    }
+
+    .fill-height {
+      height: 100%;
+      overflow: auto;
+    }
+
+    .transparent-icon {
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==) left center;
+      width: 27px;
+      height: 17px;
+    }
+
+    .select-after {
+      width: 210px !important;
+    }
+
+    .transparent-degree {
+      width: 350px;
+    }
+
+    .load-tree {
+      margin-bottom: 20px;
+      padding: 30px 50px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .load-tree .ant-spin-text {
+      font-size: 12px;
+      color: #6b6a6a;
+    }
+
+    .tree .ant-result-title {
+      font-size: 14px;
+    }
+
+    .tree-dark .ant-result-title {
+      color: #797979;
+    }
+
+    .ant-spin-dot-item {
+      background-color: #6b6a6a
+    }
+
+    .tree-light {
+      background-color: #D2D8E2;
+    }
+
+    .tree-dark {
+      background-color: #1b1b1b;
+    }
+
+    .tree-light.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+      background-color: #bae7ff !important;
+    }
+
+    .ant-tree.ant-tree-directory .ant-tree-tree-selected:hover {
+      background: #4073BD;
+    }
+
+    .tree-dark.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+      background-color: #444b4f !important;
+    }
+
+    .tree-light .text {
+      color: #000000;
+    }
+
+    .tree-dark .text {
+      color: #cacaca;
+    }
+
+    .tree-dark .ant-tree-treenode-disabled .ant-tree-title {
+      color: #555555;
+    }
+
+    .ant-tree {
+      font-size: 12px;
+    }
+
+    .ant-tree-indent-unit {
+      width: 13px;
+    }
+
+    .ant-tree-switcher {
+      width: 15px;
+    }
+
+    .ant-tree .ant-tree-node-content-wrapper {
+      white-space: nowrap;
+    }
+
+    .ant-tree .ant-tree-node-content-wrapper .ant-tree-iconEle {
+      width: 26px;
+    }
+
+    .load-pane {
+      margin-bottom: 20px;
+      padding: 30px 50px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .load-pane .ant-spin-text {
+      font-size: 12px;
+      color: #6b6a6a;
+    }
+
+    .pane-light a {
+      color: #000000;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      flex: 1;
+    }
+
+    .pane-dark a {
+      color: #cacaca;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      flex: 1;
+    }
+
+    .ant-empty {
+      margin-top: 20px;
+      font-size: 12px;
+    }
+
+    .pane-dark .ant-empty {
+      color: #535353;
+    }
+
+    .pane-dark .ant-empty-img-simple-g {
+      stroke: #535353;
+    }
+
+    .pane-dark .ant-empty-img-simple-ellipse,
+    .pane-dark .ant-empty-img-simple-path {
+      fill: #535353;
+    }
+
+    .pane .ant-empty-normal {
+      margin: 0 0 10px 0;
+    }
+
+    .ant-dropdown {
+      font-size: 12px;
+    }
+
+    .pane-light {
+      background-color: #F6F6F6;
+    }
+
+    .pane-dark {
+      background-color: #1b1b1b;
+    }
+
+    .pane.pane-tabs {
+      height: 100%;
+    }
+
+    .pane.pane-tabs .ant-tabs-content-holder {
+      overflow: auto;
+    }
+
+    .pane-light.ant-tabs .ant-tabs-nav-wrap {
+      background-color: #E5E5E5;
+    }
+
+    .pane-dark.ant-tabs .ant-tabs-nav-wrap {
+      background-color: #2a2a2a;
+    }
+
+    .pane-dark .ant-card-bordered {
+      border: 1px solid #b0b0b0;
+    }
+
+    .pane-dark .ant-card-head {
+      border-bottom: 1px solid #b0b0b0;
+    }
+
+    .pane-light .ant-tabs-tab {
+      background-color: #eae9e9 !important;
+      color: #838383 !important;
+      border: unset !important;
+    }
+
+    .pane-dark .ant-tabs-tab {
+      background-color: #333232 !important;
+      color: #898989 !important;
+      border-color: #1B1B1B !important;
+    }
+
+    .pane-light.ant-tabs .ant-tabs-tab-active {
+      background-color: #F6F6F6 !important;
+      color: #8d8d8d !important;
+    }
+
+    .pane-light.ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: #404040 !important;
+    }
+
+    .pane-dark.ant-tabs .ant-tabs-tab-active {
+      background-color: #1B1B1B !important;
+      color: #ffffff !important;
+    }
+
+    .pane-dark.ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: #ffffff !important;
+    }
+
+    .pane .ant-card-body p {
+      margin-bottom: 0;
+    }
+
+    .pane-dark .ant-tabs .ant-tabs-tab-btn {
+      color: #706d6d !important;
+    }
+
+    .pane.ant-tabs .ant-tabs-tab .ant-tabs-tab-btn {
+      font-size: 12px;
+    }
+
+    .pane.ant-tabs .ant-tabs-nav-list {
+      height: 22px;
+      margin-top: 4px;
+    }
+
+    .pane.ant-tabs-top>.ant-tabs-nav {
+      margin: 0;
+    }
+
+    .pane .item {
+      margin: 0 0 15px 0;
+    }
+
+    .pane .annotation-wrapper {
+      padding: 4px 10px;
+    }
+
+    .pane .annotation-wrapper .item-title {
+      margin-bottom: 0px !important;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      white-space: nowrap;
+    }
+
+    .pane .annotation-wrapper .item-title-bar {
+      width: 85%;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .pane .annotation-list {
+      margin: 2px 0;
+    }
+
+    .pane .annotation-card {
+      margin: 0 0 5px 0;
+    }
+
+    .pane .annotation-card .annotation-card-body {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .pane .annotation-card .annotation-card-body-side {
+      width: 2px;
+      min-width: 2px;
+      max-width: 2px;
+      margin-right: 4px
+    }
+
+    .pane .annotation-card .ant-card-head {
+      padding: 2px 4px !important;
+      min-height: 10px;
+    }
+
+    .pane .annotation-card .ant-card-head .ant-card-head-wrapper .ant-card-head-title {
+      font-size: 12px;
+      padding: 4px 0;
+    }
+
+    .pane .annotation-card .ant-card-head .ant-card-head-wrapper .ant-card-extra {
+      padding: 0 !important;
+    }
+
+    .pane .ant-card-body {
+      font-size: 12px;
+      padding: 4px;
+      overflow: auto;
+    }
+
+    .pane .note-wrapper {
+      padding: 4px 10px;
+    }
+
+    .pane .note-wrapper .item-title {
+      margin-bottom: 0px !important;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      white-space: nowrap;
+    }
+
+    .pane .note-wrapper .item-title-bar {
+      width: 85%;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .pane .note-list {
+      margin: 2px 0;
+    }
+
+    .pane .note-card {
+      margin: 0 0 5px 0;
+    }
+
+    .pane .note-card .ant-card-head {
+      padding: 2px 4px !important;
+      min-height: 10px;
+    }
+
+    .pane .note-card .ant-card-head .ant-card-head-wrapper .ant-card-head-title {
+      font-size: 12px;
+      padding: 4px 0;
+    }
+
+    .pane .note-card .ant-card-head .ant-card-head-wrapper .ant-card-extra {
+      padding: 0 !important;
+    }
+
+    .pane-dark .ant-card {
+      background-color: #7a7a7a;
+    }
+
+    .note-icon {
+      height: 13px;
+      width: 13px;
+    }
+
+    .pane .ant-result-title {
+      font-size: 14px;
+    }
+
+    .pane-dark .ant-result-title {
+      color: #797979;
+    }
+
+    .option-modal {
+      font-size: 12px;
+    }
+
+    .option-modal .settings-input-item {
+      width: 180px;
+    }
+
+    .option-modal .about-logo {
+      text-align: center;
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script type="text/babel" data-type="module">
+    Cu.import("resource://gre/modules/osfile.jsm");
+    const { useEffect, useState, useRef, useCallback } = React;
+    const { Layout, Modal, Form, Tabs, Input, Spin, Tree, Result, TabPane, Empty, Space, Card, Button, Progress, Divider, message } = antd;
+    const { Menu, Dropdown, PlusCircleOutlined, InputNumber, Switch, Radio, Slider } = antd;
+    const { Sider, Content } = Layout;
+    const { useHandleLibrary, Excalidraw, MainMenu, exportToBlob, exportToSvg, exportToClipboard } = ExcalidrawLib;
+
+    // [{type: 'collection', id: 1}, {type: 'item', id: 1}, {type: 'note', id: 1}, {type: 'attachment', id: 1}]
+    var from;
+    var dataIn;
+    let io;
+    let tab;
+    let tabID = Zotero.getMainWindow().Zotero_Tabs.selectedID;
+    if (tabID) {
+      tab = Zotero.getMainWindow().Zotero_Tabs._getTab(tabID);
+      if (tab && tab.tab && tab.tab.type === 'library' && tab.tab.id.startsWith('zotero-excalidraw-')) {
+        dataIn = tab.tab.data ? tab.tab.data.dataIn : undefined;
+        from = 'tab';
+      }
+    } 
+
+    Zotero.ZoteroExcalidraw.Logger.log('dataIn: ' + JSON.stringify(dataIn));
+    if (!dataIn) {
+      io = window.arguments && window.arguments.length > 0 ? window.arguments[0] : {dataIn: []};
+      dataIn = io.dataIn;
+      from = 'window';
+    }
+	  let _l10n = new Localization(["zotero-excalidraw.ftl"], true);
+
+    const _attachment = dataIn.attachmentID ? Zotero.Items.get(dataIn.attachmentID) : undefined;
+    if (!_attachment) {
+      Zotero.ZoteroExcalidraw.Messages.error(undefined, 'The parameter dataIn.attachmentID is incorrect.');
+      Zotero.getMainWindow().Zotero_Tabs.close(tabID);
+    } else {
+      const resolvablePromise = () => {
+        let resolve;
+        let reject;
+        const promise = new Promise((_resolve, _reject) => {
+          resolve = _resolve;
+          reject = _reject;
+        });
+        promise.resolve = resolve;
+        promise.reject = reject;
+        return promise;
+      };
+      
+      const defNormal = {
+        treeWidth: 300,
+        paneWidth: 300,
+        theme: "light",
+        savePreviewEnabled: true,
+        gridModeEnabled: false,
+        exportWithDarkMode: false
+      };
+      
+      const defItemDefaultStyle = {
+        width: 200,
+        strokeColor: "000000",
+        backgroundColor: "ffffff",
+        fillStyle: "solid",
+        strokeWidth: 1,
+        strokeStyle: "solid",
+        roughness: 1,
+        strokeSharpness: "sharp",
+        fontColor: "000000",
+        fontSize: 16,
+        fontFamily: 1,
+        textAlign: "left",
+        opacity: 100,
+        verticalAlign: "top"
+      };
+
+      const defAnnotationDefaultStyle = {
+        width: 250,
+        strokeColor: "000000",
+        backgroundColor: "actual",
+        fillStyle: "solid",
+        strokeWidth: 1,
+        strokeStyle: "solid",
+        roughness: 1,
+        strokeSharpness: "sharp",
+        fontColor: "000000",
+        fontSize: 16,
+        fontFamily: 1,
+        textAlign: "left",
+        opacity: 100,
+        verticalAlign: "top"
+      };
+
+      const defNoteDefaultStyle = {
+        width: 400,
+        strokeColor: "000000",
+        backgroundColor: "fab005",
+        fillStyle: "solid",
+        strokeWidth: 1,
+        strokeStyle: "solid",
+        roughness: 1,
+        strokeSharpness: "sharp",
+        fontColor: "000000",
+        fontSize: 16,
+        fontFamily: 1,
+        textAlign: "left",
+        opacity: 100,
+        verticalAlign: "top"
+      };
+
+      const _profiles = {
+        normal: Object.assign(defNormal, Zotero.ZoteroExcalidraw.Prefs.getJson('normal', defNormal)),
+        itemDefaultStyle: Object.assign(defItemDefaultStyle, Zotero.ZoteroExcalidraw.Prefs.getJson('itemDefaultStyle', defItemDefaultStyle)),
+        annotationDefaultStyle: Object.assign(defAnnotationDefaultStyle, Zotero.ZoteroExcalidraw.Prefs.getJson('annotationDefaultStyle', defAnnotationDefaultStyle)),
+        noteDefaultStyle: Object.assign(defNoteDefaultStyle, Zotero.ZoteroExcalidraw.Prefs.getJson('noteDefaultStyle', defNoteDefaultStyle)),
+      }
+
+      const App = () => {
+        const [spinning, setSpinning] = useState(true);
+
+        const [treeData, setTreeData] = useState([]);
+        const [itemData, setItemData] = useState([]);
+        const saving = useRef();
+
+        let title = _attachment.getDisplayTitle();
+        if (from === 'window') {
+          document.title = title;
+        } else if (from === 'tab') {
+          Zotero.getMainWindow().Zotero_Tabs.rename(tabID, title);
+        }
+
+        const [excalidrawAPI, setExcalidrawAPI] = useState(null);
+        useHandleLibrary({ excalidrawAPI });
+        const [lastElementUpdated, setLastElementUpdated] = useState(0);
+
+        const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
+
+        const [treeWidth, setTreeWidth] = useState(_profiles.normal.treeWidth);
+        const [paneWidth, setPaneWidth] = useState(_profiles.normal.paneWidth);
+        const [gridModeEnabled, setGridModeEnabled] = useState(_profiles.normal.gridModeEnabled);
+        const [exportWithDarkMode, setExportWithDarkMode] = useState(_profiles.normal.exportWithDarkMode);
+        const [theme, setTheme] = useState(_profiles.normal.theme);
+
+        
+
+        const [noteDefaultStyle, setNoteDefaultStyle] = useState(Object.assign({}, _profiles.noteDefaultStyle));
+        const [itemDefaultStyle, setItemDefaultStyle] = useState(Object.assign({}, _profiles.itemDefaultStyle));
+        const [annotationDefaultStyle, setAnnotationDefaultStyle] = useState(Object.assign({}, _profiles.annotationDefaultStyle));
+
+        const [noteDefaultStyleForm] = Form.useForm();
+        const [itemDefaultStyleForm] = Form.useForm();
+        const [annotationDefaultStyleForm] = Form.useForm();
+
+        const initialData = Zotero.ZoteroExcalidraw.ExcalidrawUtils.load(_attachment);
+        const libraryItems = useRef();
+        libraryItems.current = initialData.libraryItems || [];
+
+        const initialStatePromiseRef = useRef({ promise: null });
+        if (!initialStatePromiseRef.current.promise) {
+          initialStatePromiseRef.current.promise = resolvablePromise();
+        }
+
+        const getLastElementUpdated = (elements) => {
+          var lastUpdated = 0;
+          elements.forEach(element => {
+            lastUpdated = Math.max(element.updated, lastUpdated);
+          })
+          return lastUpdated;
+        }
+
+        const load = () => {
+          setTreeWidth(_profiles.normal.treeWidth)
+          setPaneWidth(_profiles.normal.paneWidth)
+          setGridModeEnabled(_profiles.normal.gridModeEnabled)
+          setExportWithDarkMode(_profiles.normal.exportWithDarkMode)
+          setTheme(_profiles.normal.theme)
+          setNoteDefaultStyle(Object.assign({}, _profiles.noteDefaultStyle))
+          setItemDefaultStyle(Object.assign({}, _profiles.itemDefaultStyle))
+          setAnnotationDefaultStyle(Object.assign({}, _profiles.annotationDefaultStyle))
+
+          setTimeout(async () => {
+            loadLibraryData();
+            await loadPageData();
+          }, 50);
+          //   fetchItemData()
+        }
+
+        const addElementWithNote = (htmls, cardlink) => {
+          var doc = (new DOMParser()).parseFromString(htmls, 'text/html')
+          var rectangleElement = addElementWithCard(htmls, cardlink)
+
+          var y = rectangleElement.y + rectangleElement.height + 20
+          for (let index = 0; index < doc.body.getElementsByTagName('img').length; index++) {
+            const element = doc.body.getElementsByTagName('img')[index]
+            const src = element.getAttribute('src')
+            if (src.startsWith('data:image')) {
+              var width = parseInt(element.getAttribute('width') || '0')
+              var height = parseInt(element.getAttribute('height') || '0')
+              if (width > 0) {
+                var scale = height / width
+                width = Math.min(width, noteDefaultStyle.width)
+                height = width * scale
+              } else {
+                width = noteDefaultStyle.width
+                height = noteDefaultStyle.height
+              }
+              onAddImageElement(width, height, src, cardlink, rectangleElement.x, y)
+              y += height + 20
+              excalidrawAPI.scrollToContent(rectangleElement)
+            }
+          }
+        }
+
+        useEffect(() => {
+          if (!excalidrawAPI) {
+            return;
+          }
+          initialStatePromiseRef.current.promise.resolve(initialData);
+          setLastElementUpdated(getLastElementUpdated(initialData.elements));
+          excalidrawAPI.scrollToContent();
+        }, [excalidrawAPI]);
+
+        useEffect(() => {
+            load();
+
+            setSpinning(false);
+        }, [excalidrawAPI]);
+
+        const onSave = async (onSuccess) => {
+          if (excalidrawAPI.getSceneElements().length === 0) {
+            message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-empty'));;
+            return;
+          }
+
+          save();
+        }
+
+        const onSaveAs = async () => {
+          if (excalidrawAPI.getSceneElements().length === 0) {
+            message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-empty'));
+            return
+          }
+          
+          let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+          fp.init(window, _l10n.formatValueSync('zotero-excalidraw-saveas'), Ci.nsIFilePicker.modeSave);
+          fp.appendFilter('Excalidraw File', '*.excalidraw');
+          fp.defaultString = _attachment.getDisplayTitle();
+          fp.open(async function (returnConstant) {
+            if (returnConstant === 0 || returnConstant === 2) {
+              let file = fp.file;
+              file.QueryInterface(Ci.nsIFile);
+              
+              const content = {
+                elements: excalidrawAPI.getSceneElements(),
+                appState: {
+                  viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
+                  currentItemFontFamily: 1,
+                  exportWithDarkMode: exportWithDarkMode
+                },
+                files: excalidrawAPI.getFiles()
+              }
+              
+              Zotero.File.putContents(Zotero.File.pathToFile(file.path), JSON.stringify(content));
+              message.success(_l10n.formatValueSync('zotero-excalidraw-successful'));
+            }
+          }.bind(this));
+        }
+
+        const onOpen = async () => {
+          if (Zotero.ZoteroExcalidraw.Messages.confirm(window, Zotero.ZoteroExcalidraw.L10ns.getString('zotero-excalidraw-open-ask'))) {
+            let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+            fp.init(window, _l10n.formatValueSync('zotero-excalidraw-open'), Ci.nsIFilePicker.modeOpen);
+            fp.appendFilter('Excalidraw File', '*.excalidraw');
+            fp.open(function (returnConstant) {
+              if (returnConstant === 0 || returnConstant === 2) {
+                let file = fp.file;
+                file.QueryInterface(Ci.nsIFile);
+                let content = Zotero.File.getContents(file.path);
+                if (content) {
+                  try {
+                    let exca = JSON.parse(content);
+                    excalidrawAPI.resetScene();
+                    excalidrawAPI.updateScene(exca);
+                    excalidrawAPI.scrollToContent();
+                  } catch (error) {
+                    Zotero.ZoteroExcalidraw.Logger.log(error);
+                    Zotero.ZoteroExcalidraw.Messages.warning(window, _l10n.formatValueSync('zotero-excalidraw-error'));
+                  }
+                } else {
+                  Zotero.ZoteroExcalidraw.Messages.warning(window, _l10n.formatValueSync('zotero-excalidraw-error'));
+                }
+              }
+            }.bind(this))
+          }
+        }
+
+        const onExport = async () => {
+          let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+          fp.init(window, _l10n.formatValueSync('zotero-excalidraw-import'), Ci.nsIFilePicker.modeOpen);
+          fp.appendFilter('Excalidraw File', '*.excalidraw');
+          fp.open(function (returnConstant) {
+            if (returnConstant === 0 || returnConstant === 2) {
+              let file = fp.file;
+              file.QueryInterface(Ci.nsIFile);
+              let content = Zotero.File.getContents(file.path);
+              if (content) {
+                try {
+                  let exca = JSON.parse(content);
+                  let count = exca.elements.length;
+                  Zotero.ZoteroExcalidraw.Logger.trace('exca', exca);
+                  let elements = [...excalidrawAPI.getSceneElements()];
+                  let exists = 0;
+                  exca.elements.forEach(element => {
+                    if (elements.find(e => e.id === element.id)) {
+                      exists++;
+                    } else {
+                      elements.push(element);
+                    }
+                  });
+                  exca.elements = elements;
+                  Zotero.ZoteroExcalidraw.Logger.trace('exca', exca);
+                  excalidrawAPI.updateScene(exca);
+                  excalidrawAPI.scrollToContent();
+                  message.success(_l10n.formatValueSync('zotero-excalidraw-import-successful', {ok: count - exists, exists}));
+                } catch (error) {
+                  Zotero.ZoteroExcalidraw.Logger.log(error);
+                  Zotero.ZoteroExcalidraw.Messages.warning(window, _l10n.formatValueSync('zotero-excalidraw-error'));
+                }
+              } else {
+                Zotero.ZoteroExcalidraw.Messages.warning(window, _l10n.formatValueSync('zotero-excalidraw-error'));
+              }
+            }
+          }.bind(this))
+        }
+
+        const findRectangleElement = (elements, id) => {
+          var rectangles = elements.filter(e => e.id === id)
+          if (rectangles.length > 0) {
+            return rectangles[0]
+          }
+        }
+
+        const findTextElement = (elements, containerId) => {
+          var texts = elements.filter(e => e.containerId === containerId)
+          if (texts.length > 0) {
+            return texts[0]
+          }
+        }
+
+        const fisrtListRectangleElements = (elements, rectangles) => {
+          rectangles.sort((a, b) => a.y !== b.y ? a.y - b.y : a.x - b.x)
+          var fisrtRectangle = rectangles[0]
+          var fisrtRectangleOthers = rectangles.filter(e => e.y > fisrtRectangle.y && e.y <= fisrtRectangle.y + fisrtRectangle.height && e.x < fisrtRectangle.x)
+          while (fisrtRectangleOthers.length > 0) {
+            fisrtRectangleOthers.sort((a, b) => a.x - b.x)
+            fisrtRectangle = fisrtRectangleOthers[fisrtRectangleOthers.length - 1]
+
+            fisrtRectangleOthers = rectangles.filter(e => e.y > fisrtRectangle.y && e.y <= fisrtRectangle.y + fisrtRectangle.height && e.x < fisrtRectangle.x)
+          }
+          var startY = fisrtRectangle.y
+          var endY = startY + fisrtRectangle.height
+          var minStartY = startY
+          var maxEndY = endY
+          var newRectangles = rectangles.filter(e => e.id !== fisrtRectangle.id)
+          fisrtRectangleOthers = newRectangles.filter(e => (e.y + e.height >= startY && e.y + e.height < endY) || (e.y >= startY && e.y < endY))
+          while (fisrtRectangleOthers.length > 0) {
+            fisrtRectangleOthers.sort((a, b) => a.x - b.x)
+            fisrtRectangle = fisrtRectangleOthers[0]
+
+            startY = fisrtRectangle.y
+            endY = startY + fisrtRectangle.height
+            minStartY = Math.min(minStartY, startY)
+            maxEndY = Math.max(maxEndY, endY)
+            newRectangles = newRectangles.filter(e => e.id !== fisrtRectangle.id)
+            fisrtRectangleOthers = newRectangles.filter(e => (e.y + e.height >= startY && e.y + e.height < endY) || (e.y >= startY && e.y < endY))
+          }
+
+          var results = rectangles.filter(e => e.y >= minStartY && e.y <= maxEndY)
+          results.sort((a, b) => a.x - b.x)
+          return results
+        }
+
+        const onSaveTxt = async () => {
+          if (excalidrawAPI.getSceneElements().length === 0) {
+            message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-empty'));
+            return
+          }
+          
+          let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+          fp.init(window, _l10n.formatValueSync('zotero-excalidraw-savetxt'), Ci.nsIFilePicker.modeSave);
+          fp.appendFilter('Text File', '*.txt');
+          fp.defaultString = _attachment.getDisplayTitle().replace('.excalidraw', '.txt');
+          fp.open(async function (returnConstant) {
+              Zotero.ZoteroExcalidraw.Logger.trace('returnConstant', returnConstant);
+            if (returnConstant === 0 || returnConstant === 2) {
+              let file = fp.file;
+              file.QueryInterface(Ci.nsIFile);
+              Zotero.ZoteroExcalidraw.Logger.trace('file.path', file.path);
+
+              var elements = excalidrawAPI.getSceneElements()
+              var texts = elements.filter(e => e.type === 'text')
+              if (texts.length === 0) {
+                message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-no-text'))
+                return
+              }
+              var rectangles = texts.map(e => {
+                var ret = findRectangleElement(elements, e.containerId)
+                return ret ? ret : e
+              })
+
+              var results = []
+              while (rectangles.length > 0) {
+                var fisrtsRectangle = fisrtListRectangleElements(elements, rectangles)
+                results.push(...fisrtsRectangle)
+                rectangles = rectangles.filter(e => !fisrtsRectangle.includes(e))
+              }
+              var content = results.map(e => {
+                if (e.type === 'text') {
+                  return e.originalText
+                } else {
+                  return findTextElement(elements, e.id).originalText
+                }
+              }).join('\n\n');
+              Zotero.File.putContents(Zotero.File.pathToFile(file.path), content);
+            }
+          }.bind(this));
+
+        }
+
+        const onSavePng = async () => {
+          if (excalidrawAPI.getSceneElements().length === 0) {
+            message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-empty'));
+            return
+          }
+          
+          let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+          fp.init(window, _l10n.formatValueSync('zotero-excalidraw-savepng'), Ci.nsIFilePicker.modeSave);
+          fp.appendFilter('Image File', '*.png');
+          fp.defaultString = _attachment.getDisplayTitle().replace('.excalidraw', '.png');
+          fp.open(async function (returnConstant) {
+            if (returnConstant === 0 || returnConstant === 2) {
+              let file = fp.file;
+              file.QueryInterface(Ci.nsIFile);
+              
+              const content = {
+                elements: excalidrawAPI.getSceneElements(),
+                appState: {
+                  viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
+                  currentItemFontFamily: 1,
+                  exportWithDarkMode: exportWithDarkMode
+                },
+                files: excalidrawAPI.getFiles()
+              }
+              const blob = await exportToBlob(content);
+              Zotero.File.putContentsAsync(Zotero.File.pathToFile(file.path), blob);
+            }
+          }.bind(this));
+        }
+
+        const onSaveSvg = async () => {
+          if (excalidrawAPI.getSceneElements().length === 0) {
+            message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-empty'));
+            return;
+          }
+          
+          let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+          fp.init(window, _l10n.formatValueSync('zotero-excalidraw-savesvg'), Ci.nsIFilePicker.modeSave);
+          fp.appendFilter('Svg File', '*.svg');
+          fp.defaultString = _attachment.getDisplayTitle().replace('.excalidraw', '.svg');
+          fp.open(async function (returnConstant) {
+            if (returnConstant === 0 || returnConstant === 2) {
+              let file = fp.file;
+              file.QueryInterface(Ci.nsIFile);
+              
+              const content = {
+                elements: excalidrawAPI.getSceneElements(),
+                appState: {
+                  viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
+                  currentItemFontFamily: 1,
+                  exportWithDarkMode: exportWithDarkMode
+                },
+                files: excalidrawAPI.getFiles()
+              }
+              const svg = await exportToSvg(content);
+              Zotero.File.putContents(Zotero.File.pathToFile(file.path), svg.outerHTML);
+              message.success(_l10n.formatValueSync('zotero-excalidraw-successful'));
+            }
+          }.bind(this));
+        }
+
+        const onCopyPng = async () => {
+          if (excalidrawAPI.getSceneElements().length === 0) {
+            message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-empty'));
+            return
+          }
+          
+          const content = {
+            elements: excalidrawAPI.getSceneElements(),
+            appState: {
+              viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
+              currentItemFontFamily: 1,
+              exportWithDarkMode: exportWithDarkMode
+            },
+            files: excalidrawAPI.getFiles()
+          }
+          const blob = await exportToBlob(content);
+          var reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = function () {
+            var imagebase64 = reader.result;
+            
+            let parts = imagebase64.split(',');
+            if (!parts[0].includes('base64')) {
+              return;
+            }
+            let mime = parts[0].match(/:(.*?);/)[1];
+            let bstr = atob(parts[1]);
+            let n = bstr.length;
+            let u8arr = new Uint8Array(n);
+            while (n--) {
+              u8arr[n] = bstr.charCodeAt(n);
+            }
+            let imgTools = Components.classes["@mozilla.org/image/tools;1"].getService(Components.interfaces.imgITools);
+            let transferable = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+            let clipboardService = Components.classes['@mozilla.org/widget/clipboard;1'].getService(Components.interfaces.nsIClipboard);
+            let img = imgTools.decodeImageFromArrayBuffer(u8arr.buffer, mime);
+            transferable.init(null);
+            let kNativeImageMime = 'application/x-moz-nativeimage';
+            transferable.addDataFlavor(kNativeImageMime);
+            transferable.setTransferData(kNativeImageMime, img);
+            clipboardService.setData(transferable, null, Components.interfaces.nsIClipboard.kGlobalClipboard);
+            message.success(_l10n.formatValueSync('zotero-excalidraw-copy-successful'));
+          }
+        }
+
+        const onCopySvg = async () => {
+          if (excalidrawAPI.getSceneElements().length === 0) {
+            message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-empty'));
+            return
+          }
+          
+          await exportToClipboard({
+            elements: excalidrawAPI.getSceneElements(),
+            appState: excalidrawAPI.getAppState(),
+            files: excalidrawAPI.getFiles(),
+            type: 'svg'
+          });
+          message.success(_l10n.formatValueSync('zotero-excalidraw-copy-successful'));
+        }
+
+        const onSaveSvgAnimation = async () => {
+          if (excalidrawAPI.getSceneElements().length === 0) {
+            message.warning(_l10n.formatValueSync('zotero-excalidraw-elements-empty'));
+            return
+          }
+
+          var content = {};
+          content.elements = excalidrawAPI.getSceneElements();
+          content.appState = {
+            viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
+            exportBackground: false
+          }
+          content.files = excalidrawAPI.getFiles();
+          const svg = await exportToSvg(content);
+
+          const options = {
+            startMs: undefined,
+            pointerImg: undefined,
+            pointerWidth: undefined,
+            pointerHeight: undefined,
+          };
+          const elements = content.elements;
+          const svg1 = await exportToSvg({
+            elements,
+            files: content.files,
+            appState: {
+              exportBackground: true,
+              viewBackgroundColor: "white",
+            },
+            exportPadding: 30,
+          });
+          const result = animateSvg(svg1, elements, options);
+          console.log(svg1);
+          options.startMs = result.finishedMs;
+          //return { svg1, finishedMs: result.finishedMs };
+
+          const savedMs = svg1.getCurrentTime();
+          svg1.setCurrentTime(0);
+          const svgStr = new XMLSerializer().serializeToString(svg1);
+          svg1.setCurrentTime(savedMs);
+
+
+          // ipcRenderer.sendSync('asynchronous-message', { command: 'saveSvg', defaultPath: appcontext.argv.title, content: svgStr })
+        }
+
+        const save = async () => {
+          if (saving.current) {
+            return;
+          }
+
+          saving.current = true;
+          const content = {
+            elements: excalidrawAPI.getSceneElements(),
+            scrollToContent: true,
+            appState: {
+              viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
+              currentItemFontFamily: 1,
+              exportWithDarkMode: exportWithDarkMode
+            },
+            files: excalidrawAPI.getFiles(),
+            libraryItems: libraryItems.current
+          }
+          const blob = await exportToBlob(content);
+          if (_profiles.normal.savePreviewEnabled) {
+            var reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = function () {
+              var imagebase64 = reader.result;
+              Zotero.ZoteroExcalidraw.ExcalidrawUtils.save(_attachment, content, imagebase64);
+              let lastUpdated = getLastElementUpdated(excalidrawAPI.getSceneElementsIncludingDeleted());
+              setLastElementUpdated(lastUpdated);
+              Zotero.ZoteroExcalidraw.Logger.log(`${lastUpdated}, ${lastElementUpdated}`);
+              saving.current = false;
+            }
+          } else {
+            Zotero.ZoteroExcalidraw.ExcalidrawUtils.save(_attachment, content);
+            let lastUpdated = getLastElementUpdated(content.elements);
+            setLastElementUpdated(lastUpdated);
+            Zotero.ZoteroExcalidraw.Logger.log(`${lastUpdated}, ${lastElementUpdated}`);
+            saving.current = false;
+          }
+        }
+
+        const onLinkOpen = useCallback((element, event) => {
+          Zotero.ZoteroExcalidraw.Logger.log(element);
+          
+          const link = element.link;
+          const { nativeEvent } = event.detail;
+          const isNewTab = nativeEvent.ctrlKey || nativeEvent.metaKey;
+          const isNewWindow = nativeEvent.shiftKey;
+          const isInternalLink = link.startsWith("/") || link.includes(window.location.origin);
+          if (isInternalLink && !isNewTab && !isNewWindow) {
+            // signal that we're handling the redirect ourselves
+            event.preventDefault();
+            // do a custom redirect, such as passing to react-router
+            // ...
+          } else {
+            event.preventDefault();
+            Zotero.ZoteroExcalidraw.Logger.trace('link', link);
+
+            Zotero.ZoteroExcalidraw.Protocols.select(link);
+          }
+        }, []);
+
+        const onAddRectangleElement = (defaultStyle, text, link, backgroundColor) => {
+          const sceneData = {
+            elements: excalidrawAPI.getSceneElements(),
+            appState: excalidrawAPI.appState
+          };
+
+          var elementRectangles = [...sceneData.elements.filter(e => ['image', 'rectangle'].includes(e.type))]
+          elementRectangles.sort((a, b) => b.x - a.x)
+          var lastElement = elementRectangles.length > 0 ? elementRectangles[0] : undefined;
+          const elements = Zotero.ExcalidrawUtils.addRectangleElement(window.document, defaultStyle, text, link, lastElement ? lastElement.x + lastElement.width + 20 : 0, lastElement ? lastElement.y : 0, backgroundColor)
+          sceneData.elements.push(...elements)
+          excalidrawAPI.updateScene(sceneData)
+          excalidrawAPI.scrollToContent(elements)
+          return elements.filter(e => e.type === 'rectangle')[0]
+        }
+
+        const onAddImageElement = (width, height, dataURL, link, x, y) => {
+          const sceneData = {
+            elements: excalidrawAPI.getSceneElements(),
+            appState: excalidrawAPI.appState
+          };
+
+          var file = Zotero.ExcalidrawUtils.generateFile(dataURL)
+          if (!x || !y) {
+            var elementRectangles = [...sceneData.elements.filter(e => ['image', 'rectangle'].includes(e.type))]
+            elementRectangles.sort((a, b) => b.x - a.x)
+            var lastElement = elementRectangles.length > 0 ? elementRectangles[0] : undefined;
+            x = lastElement ? lastElement.x + lastElement.width + 20 : 0
+            y = lastElement ? lastElement.y : 0
+          }
+          const elements = Zotero.ExcalidrawUtils.addImageElement(window.document, width, height, x, y, link, file.id)
+          sceneData.elements.push(...elements)
+          excalidrawAPI.addFiles([file])
+          excalidrawAPI.updateScene(sceneData)
+          excalidrawAPI.scrollToContent(elements)
+        }
+
+        const onItemAddElement = (item) => {
+          onAddRectangleElement(itemDefaultStyle, item.title, item.link)
+        }
+
+        const onNoteAddElement = (note) => {
+          Zotero.ZoteroExcalidraw.Logger.log(note);
+          
+          onAddRectangleElement(noteDefaultStyle, note.noteText, note.link)
+        }
+
+        const onAnnotationAddElement = (annotation) => {
+          Zotero.ZoteroExcalidraw.Logger.log(annotation);
+          
+          switch (annotation.annotationType) {
+            case 'highlight':
+              onAddRectangleElement(annotationDefaultStyle, annotation.annotationText, annotation.link, annotation.annotationColor)
+              break
+            case 'note':
+              onAddRectangleElement(annotationDefaultStyle, annotation.annotationComment, annotation.link, annotation.annotationColor)
+              break
+            case 'image':
+              var width = annotation.annotationWidth
+              var height = annotation.annotationHeight
+              onAddImageElement(width, height, annotation.annotationImage, annotation.link)
+              break
+          }
+        }
+
+        const onTreeAddExcalidraw = (nodeData) => {
+          switch (nodeData.type) {
+            case 'library':
+              break;
+            case 'group':
+              break;
+            case 'collection':
+              break;
+            case 'item':
+              onItemAddElement(nodeData.extra)
+              break;
+            case 'note':
+              onNoteAddElement(nodeData.extra)
+              break;
+            case 'attachment':
+              break;
+            case 'annotation':
+              onAnnotationAddElement(nodeData.extra)
+              break;
+
+            default:
+              break;
+          }
+        }
+
+        const onNoteDefaultStyleChange = (changedValues, allValues) => {
+          let values = Object.assign(noteDefaultStyle, changedValues);
+          setNoteDefaultStyle(values)
+
+          _profiles.noteDefaultStyle = values
+          Zotero.ZoteroExcalidraw.Prefs.setJson('noteDefaultStyle', _profiles.noteDefaultStyle);
+        }
+
+        const onItemDefaultStyleChange = (changedValues, allValues) => {
+          let values = Object.assign(itemDefaultStyle, changedValues);
+          setItemDefaultStyle(values)
+
+          _profiles.itemDefaultStyle = values
+          Zotero.ZoteroExcalidraw.Prefs.setJson('itemDefaultStyle', _profiles.itemDefaultStyle);
+        }
+
+        const onAnnotationDefaultStyleChange = (changedValues, allValues) => {
+          let values = Object.assign(annotationDefaultStyle, changedValues);
+          setAnnotationDefaultStyle(values)
+
+          _profiles.annotationDefaultStyle = values
+          Zotero.ZoteroExcalidraw.Prefs.setJson('annotationDefaultStyle', _profiles.annotationDefaultStyle);
+        }
+
+        const onChangeColor = (value, defaultStyleForm, onDefaultStyleChange) => {
+          defaultStyleForm.setFieldsValue(value);
+          onDefaultStyleChange(value);
+        }
+
+        const onFormNormalChange = (values) => {
+          console.info(values)
+          if (Object.hasOwnProperty.call(values, 'treeWidth')) {
+            setTreeWidth(values['treeWidth'])
+            _profiles.normal.treeWidth = values['treeWidth']
+          }
+          if (Object.hasOwnProperty.call(values, 'paneWidth')) {
+            setPaneWidth(values['paneWidth'])
+            _profiles.normal.paneWidth = values['paneWidth']
+          }
+          if (Object.hasOwnProperty.call(values, 'gridModeEnabled')) {
+            setGridModeEnabled(values['gridModeEnabled'])
+            _profiles.normal.gridModeEnabled = values['gridModeEnabled']
+          }
+          if (Object.hasOwnProperty.call(values, 'savePreviewEnabled')) {
+            _profiles.normal.savePreviewEnabled = values['savePreviewEnabled']
+          }
+          if (Object.hasOwnProperty.call(values, 'theme')) {
+            setTheme(values['theme'])
+            _profiles.normal.theme = values['theme']
+          }
+          if (Object.hasOwnProperty.call(values, 'exportWithDarkMode')) {
+            setExportWithDarkMode(values['exportWithDarkMode'])
+            _profiles.normal.exportWithDarkMode = values['exportWithDarkMode']
+          }
+
+          Zotero.ZoteroExcalidraw.Prefs.setJson('normal', _profiles.normal);
+        }
+
+        const onClear = () => {
+          if (Zotero.ZoteroExcalidraw.Messages.confirm(window, _l10n.formatValueSync('zotero-excalidraw-elements-clear'))) {
+            excalidrawAPI.resetScene();
+          }
+        }
+
+        const onPasteCard = (div) => {
+          var cardlink = div.getAttribute('cardlink')
+          var htmls = div.outerHTML
+          var rectangleElement = addElementWithCard(htmls, cardlink)
+
+          var y = rectangleElement.y + rectangleElement.height + 20
+          for (let index = 0; index < div.getElementsByTagName('img').length; index++) {
+            const element = div.getElementsByTagName('img')[index]
+            const src = element.getAttribute('src')
+            if (src.startsWith('data:image')) {
+              var width = parseInt(element.getAttribute('width') || '0')
+              var height = parseInt(element.getAttribute('height') || '0')
+              if (width > 0) {
+                var scale = height / width
+                width = Math.min(width, noteDefaultStyle.width)
+                height = width * scale
+              } else {
+                width = noteDefaultStyle.width
+                height = noteDefaultStyle.height
+              }
+              onAddImageElement(width, height, src, cardlink, rectangleElement.x, y)
+              y += height + 20
+              excalidrawAPI.scrollToContent(rectangleElement)
+            }
+          }
+        }
+
+        const addElementWithCard = (html, cardlink) => {
+          if (html) {
+            //html = html.replace(/\<\/p\>/g, '</p>\n').replace(/\<\/p\>\\n\\n/g, '</p>\n')
+            var doc = (new DOMParser()).parseFromString(html, 'text/html')
+            var textContent = doc.textContent
+            if (!textContent) {
+              textContent = doc.body.innerText
+            }
+            return onAddRectangleElement(noteDefaultStyle, textContent, cardlink)
+          }
+        }
+
+        const onPasteAnnotation = (element) => {
+          var annotationType = element.getAttribute('atype')
+          var annotationColor = element.getAttribute('acolor')
+          var annotationLink = element.getAttribute('alink')
+          switch (annotationType) {
+            case 'highlight':
+            case 'note':
+              var content = element.querySelector('.content').textContent
+              onAddRectangleElement(annotationDefaultStyle, content, annotationLink, annotationColor)
+              break
+            case 'image':
+              var img = element.querySelector('img.image')
+              var annotationHeight = parseInt(img.getAttribute('aWidth'))
+              var annotationWidth = parseInt(img.getAttribute('aHeight'))
+              var src = img.src
+              var width = annotationWidth
+              var height = annotationHeight
+              onAddImageElement(width, height, src, annotationLink)
+              break
+          }
+        }
+
+        const onPaste = (data, event) => {
+          console.log(data);
+          if (Object.keys(data).length === 0) {
+            // card-separator
+            var html = event.clipboardData.getData('text/html')
+            Zotero.ZoteroExcalidraw.Logger.log(html);
+            
+            if (html) {
+              var doc = (new DOMParser()).parseFromString(html, 'text/html')
+              var root = doc.body
+              if (root.children.length === 0) {
+                return
+              }
+
+              if (root.children[0].tagName === 'DIV' && root.children[0].getAttribute('class') && root.children[0].getAttribute('class').includes('annotation')) {
+                // 附件注释
+                var element = root.children[0]
+                onPasteAnnotation(element)
+              } else {
+                // 卡片
+                while (root.children.length === 1) {
+                  root = root.children[0]
+                }
+
+                if (root.tagName === 'DIV' && root.getAttribute('data-schema-version')) {
+                  onPasteCard(root)
+                } else {
+                  for (let index = 0; index < root.children.length; index++) {
+                    const div = root.children[index];
+                    if (div.tagName === 'DIV' && div.getAttribute('data-schema-version')) {
+                      onPasteCard(div)
+                    }
+                  }
+                }
+              }
+
+              event.preventDefault()
+            }
+          }
+        }
+
+        const timer = useRef();
+        const onChange = (elements, appState) => {
+          Zotero.ZoteroExcalidraw.Logger.trace('timer.current', timer.current);
+          clearTimeout(timer.current);
+          timer.current = setTimeout(function () {
+            Zotero.ZoteroExcalidraw.Logger.log('onChange');
+            var lastUpdated = getLastElementUpdated(elements);
+            if (lastUpdated !== lastElementUpdated) {
+              setLastElementUpdated(lastUpdated)
+              save();
+            }
+          }.bind(this), 1000);
+        }
+
+        const onLibraryChange = (items) => {
+          libraryItems.current = items;
+          Zotero.ZoteroExcalidraw.Logger.log(libraryItems.current);
+          save();
+        }
+
+        // Pane
+
+        const _loadPageDataItem = async (data, item) => {
+          let notes = [], attachments = [];
+          for (let index = 0; index < item.getNotes().length; index++) {
+            let id = item.getNotes()[index];
+            let note = Zotero.Items.get(id);
+            let noteContent = note.getNote();
+            let noteText = Zotero.ZoteroExcalidraw.Notes.htmlToText(noteContent.replace(/(\<\/(:?h\d|p|div)\>)([^\n])/g, '$1\n$3'));
+            notes.push({
+              id: note.id,
+              title: note.getNoteTitle(),
+              note: noteContent.replace(/data-attachment-key="(.*?)"/g, 'data-attachment-key="$1" src="zotero://attachment/library/items/$1"'),
+              noteText: noteText,
+              key: note.key,
+              link: Zotero.ZoteroExcalidraw.Items.getZoteroUrl(note.key),
+            });
+          }
+
+          for (let index = 0; index < item.getAttachments().length; index++) {
+            let id = item.getAttachments()[index];
+            let attachment = Zotero.Items.get(id);
+
+            var annotations = []
+            if (attachment.isFileAttachment() && attachment.attachmentContentType === 'application/pdf') {
+              for (let index = 0; index < attachment.getAnnotations().length; index++) {
+                let ee = attachment.getAnnotations()[index]
+                let annotationImage
+                let annotationWidth
+                let annotationHeight
+                if (['image', 'ink'].includes(ee.annotationType)) {
+                  annotationImage = await Zotero.ZoteroExcalidraw.Utils.loadAnnotationImg(ee)
+                  var annotationPosition = JSON.parse(ee.annotationPosition)
+                  var size = annotationPosition.rects[0]
+                  annotationWidth = size[2] - size[0]
+                  annotationHeight = size[3] - size[1]
+                }
+                annotations.push({
+                  id: ee.id,
+                  title: ee.title,
+                  key: ee.key,
+                  annotationType: ee.annotationType, // highlight | image | note
+                  annotationText: ee.annotationText,
+                  annotationComment: ee.annotationComment,
+                  annotationColor: ee.annotationColor,
+                  annotationPageLabel: ee.annotationPageLabel,
+                  annotationImage: annotationImage,
+                  annotationWidth: annotationWidth,
+                  annotationHeight: annotationHeight,
+                  link: `zotero://open-pdf/library/items/${attachment.key}?page=${ee.annotationPageLabel}&annotation=${ee.key}`
+                })
+              }
+            }
+
+            attachments.push({
+              id: attachment.id,
+              title: attachment.getDisplayTitle(),
+              key: attachment.key,
+              itemType: attachmentItemType(attachment),
+              linkMode: Zotero.Attachments.linkModeToName(attachment.attachmentLinkMode),
+              contentType: attachment.attachmentContentType,
+              charset: attachment.attachmentCharset,
+              path: attachment.getFilePath(),
+              note: attachment.note,
+              isFileAttachment: attachment.isFileAttachment(),
+              annotations: annotations
+            })
+          }
+          
+          if (notes.length > 0 || attachments.length > 0) {
+            if (!data.find(e => e.id === item.id)) {
+              data.push({
+                id: item.id,
+                title: item.getField('title'),
+                itemType: item.itemType !== 'attachment' ? item.itemType : attachmentItemType(item),
+                key: item.key,
+                link: Zotero.ZoteroExcalidraw.Items.getZoteroUrl(item.key),
+                notes: notes,
+                attachments: attachments
+              });
+            } else {
+              Zotero.ZoteroExcalidraw.Logger.log(`${item.id} exists。`);
+            }
+          }
+        }
+
+        const _loadPageDataNote = (data, note) => {
+          let item;
+          if (note.parentItem) {
+            item = note.parentItem;
+            if (data.find(e => e.id === item.id)) {
+              Zotero.ZoteroExcalidraw.Logger.log(`${item.id} exists。`);
+              return;
+            }
+          } else {
+            item = undefined;
+          }
+
+          let noteContent = note.getNote();
+          let noteText = Zotero.ZoteroExcalidraw.Notes.htmlToText(noteContent).replace(/\n\n/g, '\n');
+          data.push({
+            id: item ? item.id : 0,
+            title: item ? item.getField('title') : undefined,
+            itemType: item ? (item.itemType !== 'attachment' ? item.itemType : attachmentItemType(item)) : undefined,
+            key: item ? item.key : undefined,
+            link: item ? Zotero.ZoteroExcalidraw.Items.getZoteroUrl(item.key) : undefined,
+            notes: [{
+              id: note.id,
+              title: note.getNoteTitle(),
+              note: noteContent.replace(/data-attachment-key="(.*?)"/g, 'data-attachment-key="$1" src="zotero://attachment/library/items/$1"'),
+              noteText: noteText,
+              key: note.key,
+              link: Zotero.ZoteroExcalidraw.Items.getZoteroUrl(note.key),
+            }],
+            attachments: []
+          });
+        }
+
+        const _loadPageDataAttachment = async (data, attachment) => {
+          let item;
+          Zotero.ZoteroExcalidraw.Logger.trace('1310', attachment);
+          if (attachment.parentItem) {
+            item = attachment.parentItem;
+            if (data.find(e => e.id === item.id)) {
+              Zotero.ZoteroExcalidraw.Logger.log(`${item.id} exists。`);
+              return;
+            }
+          } else {
+            item = attachment;
+          }
+          Zotero.ZoteroExcalidraw.Logger.trace('1320', item);
+          var annotations = []
+          if (attachment.isFileAttachment() && attachment.attachmentContentType === 'application/pdf') {
+            for (let index = 0; index < attachment.getAnnotations().length; index++) {
+              const ee = attachment.getAnnotations()[index]
+              let annotationImage
+              let annotationWidth
+              let annotationHeight
+              if (['image', 'ink'].includes(ee.annotationType)) {
+                annotationImage = await Zotero.ZoteroExcalidraw.Utils.loadAnnotationImg(ee)
+                var annotationPosition = JSON.parse(ee.annotationPosition)
+                var size = annotationPosition.rects[0]
+                annotationWidth = size[2] - size[0]
+                annotationHeight = size[3] - size[1]
+              }
+              annotations.push({
+                id: ee.id,
+                title: ee.title,
+                key: ee.key,
+                annotationType: ee.annotationType, // highlight | image | note
+                annotationText: ee.annotationText,
+                annotationComment: ee.annotationComment,
+                annotationColor: ee.annotationColor,
+                annotationPageLabel: ee.annotationPageLabel,
+                annotationImage: annotationImage,
+                annotationWidth: annotationWidth,
+                annotationHeight: annotationHeight,
+                link: `zotero://open-pdf/library/items/${attachment.key}?page=${ee.annotationPageLabel}&annotation=${ee.key}`
+              })
+            }
+          }
+          Zotero.ZoteroExcalidraw.Logger.trace('annotationslength', annotations.length);
+
+          data.push({
+            id: item ? item.id : 0,
+            title: item ? item.getField('title') : undefined,
+            itemType: item ? (item.itemType !== 'attachment' ? item.itemType : attachmentItemType(item)) : undefined,
+            key: item ? item.key : undefined,
+            link: item ? Zotero.ZoteroExcalidraw.Items.getZoteroUrl(item.key) : undefined,
+            notes: [],
+            attachments: [{
+              id: attachment.id,
+              title: attachment.getDisplayTitle(),
+              key: attachment.key,
+              itemType: attachmentItemType(attachment),
+              linkMode: Zotero.Attachments.linkModeToName(attachment.attachmentLinkMode),
+              contentType: attachment.attachmentContentType,
+              charset: attachment.attachmentCharset,
+              path: attachment.getFilePath(),
+              note: attachment.note,
+              isFileAttachment: attachment.isFileAttachment(),
+              annotations: annotations
+            }]
+          });
+          Zotero.ZoteroExcalidraw.Logger.trace('data', data);
+        }
+
+        const loadPageData = async () => {
+          // [{type: 'item', id: 1}, {type: 'note', id: 1}, {type: 'attachment', id: 1}]
+          let data = [];
+          let collection, item, note, notes = [], attachments = [];
+          for (let index = 0; index < dataIn.items.length; index++) {
+            const element = dataIn.items[index];
+            Zotero.ZoteroExcalidraw.Logger.trace('element', element);
+            switch (element.type) {
+              case 'collection':
+                collection = Zotero.Collections.get(element.id);
+                let items = collection.getChildItems();
+                
+                for (let index = 0; index < items.length; index++) {
+                  item = items[index];
+                  if (item.isRegularItem()) {
+                    await _loadPageDataItem(data, item);
+                  } else if (item.isNote()) {
+                    _loadPageDataNote(data, item);
+                  } else if (item.isFileAttachment() && item.attachmentContentType === 'application/pdf') {
+                    await _loadPageDataAttachment(data, item);
+                  }
+                }
+
+                Zotero.ZoteroExcalidraw.Logger.trace('data', data);
+                break;
+              case 'item':
+                let item = Zotero.Items.get(element.id);
+                await _loadPageDataItem(data, item);
+                break;
+              case 'note':
+                note = Zotero.Items.get(element.id);
+                _loadPageDataNote(data, note);
+                break;
+              case 'attachment':
+                let attachment = Zotero.Items.get(element.id);
+                Zotero.ZoteroExcalidraw.Logger.trace('attachment, 1411', attachment);
+                await _loadPageDataAttachment(data, attachment);
+                break;
+            
+              default:
+                break;
+            }
+          }
+          
+          setItemData(data);
+        }
+
+
+        // Tree
+
+        const loadLibraryData = async () => {
+          var treeData = []
+          let librarys = Zotero.Libraries.getAll();
+          for (let index = 0; index < librarys.length; index++) {
+            const l = librarys[index];
+            let node = {
+              key: `${l.libraryType}-${l.libraryID}`,
+              libraryType: l.libraryType,
+              title: l.name,
+              editable: l.editable,
+              icon: (<img className="button-icon" src={l.treeViewImage}></img>),
+              type: l.libraryType,
+              extra: {
+                libraryID: l.libraryID,
+                isGroup: l.isGroup,
+                ...l
+              },
+              children: Zotero.Collections.getByLibrary(l.libraryID).map(e => {
+                return {
+                  key: `collection-${e.id}`,
+                  title: e.name,
+                  icon: <img className="button-icon" src={e.treeViewImage}></img>,
+                  type: 'collection',
+                  extra: {
+                    isGroup: l.isGroup,
+                    ...e
+                  },
+                  children: []
+                }
+              })
+            };
+
+            let rets = await Zotero.Items.getAll(l.libraryID, true, false).filter(e => (e.isRegularItem() || e.isNote()) && e.getCollections().length === 0);
+            node.children.push(...rets.map(e => {
+              return {
+                key: `item-${e.id}-${l.libraryID}`,
+                title: e.getDisplayTitle(),
+                icon: <img className="button-icon" src={`chrome://zotero/skin/treeitem-${e.itemType}@2x.png`}></img>,
+                type: 'item',
+                isLeaf: !e.isRegularItem(),
+                children: [],
+                extra: {
+                  id: e.id,
+                  libraryID: l.libraryID,
+                  isGroup: l.isGroup,
+                  collectionID: 0,
+                  itemType: e.itemType !== 'attachment' ? e.itemType : attachmentItemType(e),
+                  title: e.getField('title'),
+                  key: e.key,
+                  link: Zotero.getMainWindow().Zotero.ZoteroExcalidraw.Items.getZoteroUrl(e.key)
+                }
+              }
+            }));
+            treeData.push(node);
+          }
+
+          setTreeData(treeData)
+        };
+
+        const onLoadTreeData = async ({ key, extra, children }) => new Promise(async (resolve) => {
+          Zotero.ZoteroExcalidraw.Logger.trace(1040, children.length);
+          if (children && children.length > 0) {
+            Zotero.ZoteroExcalidraw.Logger.trace('children', children);
+            resolve();
+            return;
+          }
+          Zotero.ZoteroExcalidraw.Logger.log(1045);
+
+          var keys = key.split('-')
+          var id = keys[1]
+          var _children = [];
+          Zotero.ZoteroExcalidraw.Logger.log({ keys });
+          switch (keys[0]) {
+            case 'collection':
+              var collection = Zotero.Collections.get(id)
+              Zotero.ZoteroExcalidraw.Logger.log(collection);
+              _children.push(...Zotero.Collections.getByParent(id).map(e => {
+                return {
+                  key: `collection-${e.id}-${Zotero.Utilities.randomString()}`,
+                  title: e.name,
+                  icon: <img className="button-icon" src={e.treeViewImage}></img>,
+                  type: 'collection',
+                  children: [],
+                  extra: {
+                    id: e.id,
+                    name: e.name,
+                    libraryID: collection.library.libraryID,
+                    isGroup: extra.isGroup,
+                    key: e.key
+                  }
+                }
+              }));
+
+              collection.getChildItems().forEach(e => {
+                if (!e.isFileAttachment() || e.attachmentContentType === 'application/pdf') {
+                  _children.push({
+                    key: `${e.isFileAttachment() ? 'attachment' : 'item'}-${e.id}-${Zotero.Utilities.randomString()}`,
+                    title: e.getDisplayTitle(),
+                    icon: e.isFileAttachment() ? <img className="button-icon" src={`chrome://zotero/skin/treeitem-${attachmentItemType(e)}@2x.png`}></img> : <img className="button-icon" src={`chrome://zotero/skin/treeitem-${e.itemType}@2x.png`}></img>,
+                    type: e.isFileAttachment() ? 'attachment' : 'item',
+                    isLeaf: !(e.isRegularItem() || e.isFileAttachment()),
+                    children: [],
+                    extra: {
+                      id: e.id,
+                      libraryID: collection.library.libraryID,
+                      isGroup: extra.isGroup,
+                      collectionID: collection.id,
+                      itemType: e.itemType !== 'attachment' ? e.itemType : attachmentItemType(e),
+                      title: e.getField('title'),
+                      key: e.key,
+                      link: extra.isGroup ? Zotero.ZoteroExcalidraw.Groups.getZoteroItemUrl(e.key) : Zotero.getMainWindow().Zotero.ZoteroExcalidraw.Items.getZoteroUrl(e.key)
+                    }
+                  })
+                }
+              });
+
+              Zotero.ZoteroExcalidraw.Logger.log(1087, _children.length);
+              setTreeData((origin) =>
+                updateTreeData(origin, key, _children),
+              );
+              resolve();
+              break;
+            case 'attachment':
+              var attachment = Zotero.Items.get(id)
+              if (attachment.isFileAttachment()) {
+                var annotations = []
+                Zotero.ZoteroExcalidraw.Logger.trace(1602, attachment);
+                for (let index = 0; index < attachment.getAnnotations().length; index++) {
+                  const ee = attachment.getAnnotations()[index]
+                  let annotationImage
+                  let annotationWidth
+                  let annotationHeight
+                  if (['image', 'ink'].includes(ee.annotationType)) {
+                    annotationImage = await Zotero.ZoteroExcalidraw.Utils.loadAnnotationImg(ee)
+                    var annotationPosition = JSON.parse(ee.annotationPosition)
+                    var size = annotationPosition.rects[0]
+                    annotationWidth = size[2] - size[0]
+                    annotationHeight = size[3] - size[1]
+                  }
+
+                  _children.push({
+                    key: `annotation-${ee.key}-${Zotero.Utilities.randomString()}`,
+                    title: ee.annotationType === 'highlight' ? ee.annotationText : (ee.annotationType === 'note' ? ee.annotationComment : _l10n.formatValueSync('zotero-excalidraw-region')),
+                    icon: ee.annotationType === 'highlight' ? <svg className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path d="M0 128 1024 128 1024 256 0 256 0 128ZM0 448 1024 448 1024 576 0 576 0 448ZM0 768 704 768 704 896 0 896 0 768Z" p-id="2110" fill={ee.annotationColor}></path></svg> : (ee.annotationType === 'note' ? <svg t="1653009941000" className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2917" width="12" height="12"><path d="M768 832H256V192h512v640m0-704H256c-35.3 0-64 28.7-64 64v640c0 35.3 28.7 64 64 64h512c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64z" p-id="2918" fill={ee.annotationColor}></path><path d="M576.1 352c0 17.7-14.3 32-32 32h-192c-17.7 0-32-14.3-32-32s14.3-32 32-32h192c17.7 0 32 14.3 32 32zM704 480c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h320c17.7 0 32 14.3 32 32zM704 608c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h320c17.7 0 32 14.3 32 32z" p-id="2919" fill={ee.annotationColor}></path></svg> : <svg className="icon" t="1652973021010" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1352" width="10" height="10"><path d="M939.625 13.598c12.7 0 23.062 10.467 23.062 23.165v500H916.53V108.352c0-26.793-21.734-48.563-48.493-48.563H104.99c-26.758 0-48.492 21.77-48.492 48.563v715.462c0 26.791 21.733 48.563 48.492 48.563h428.587v46.19H33.437c-12.732 0-23.096-10.468-23.096-23.165V36.763c0-12.698 10.362-23.165 23.096-23.165h906.188" p-id="1353" fill={ee.annotationColor}></path><path d="M821.719 583.158V774.06h190.796v46.051H821.719v190.902h-46.156V820.109H584.766v-46.051h190.797v-190.9h46.156m-508.06-377.34h0.35l0.174 0.14c9.209 15.071 81.601 134.386 137.455 226.766l20.232 33.214 21.421-32.375a40966.633 40966.633 0 0 1 77.241-116.942c22.256 33.631 115.058 174.295 143.314 217.276H114.175c17.723-30.144 189.471-312.868 198.683-327.798 0-0.001 0.172-0.281 0.801-0.281" p-id="1354" fill={ee.annotationColor}></path></svg>),
+                    isLeaf: true,
+                    type: 'annotation',
+                    extra: {
+                      id: ee.id,
+                      title: ee.annotationText,
+                      key: ee.key,
+                      isGroup: extra.isGroup,
+                      annotationType: ee.annotationType, // highlight | image | note
+                      annotationText: ee.annotationText,
+                      annotationComment: ee.annotationComment,
+                      annotationColor: ee.annotationColor,
+                      annotationPageLabel: ee.annotationPageLabel,
+                      annotationImage: annotationImage,
+                      annotationWidth: annotationWidth,
+                      annotationHeight: annotationHeight,
+                      link: `zotero://open-pdf/library/items/${attachment.key}?page=${ee.annotationPageLabel}&annotation=${ee.key}`
+                    }
+                  });
+                }
+                Zotero.ZoteroExcalidraw.Logger.trace(1630, annotations);
+              }
+
+              Zotero.ZoteroExcalidraw.Logger.trace(1444, _children.length);
+              setTreeData((origin) =>
+                updateTreeData(origin, key, _children),
+              );
+              resolve();
+              break;
+
+            case 'item':
+              var item = Zotero.Items.get(id)
+              if (item.isRegularItem()) {
+                var noteIDs = item.getNotes();
+                Zotero.ZoteroExcalidraw.Logger.trace(1399, noteIDs);
+                for (let index = 0; index < noteIDs.length; index++) {
+                  var note = Zotero.Items.get(noteIDs[index]);
+                  Zotero.ZoteroExcalidraw.Logger.trace(1370, note);
+                  var noteContent = note.getNote()//await Zotero.ZoteroExcalidraw.Utils.loadAttachmentImg(note)
+                  var noteText = Zotero.ZoteroExcalidraw.Notes.htmlToText(noteContent).replace(/\n\n/g, '\n')
+                  _children.push({
+                    key: `note-${note.id}-${Zotero.Utilities.randomString()}`,
+                    title: note.getDisplayTitle(),
+                    icon: <img className="button-icon" src="chrome://zotero/skin/treeitem-note.png"></img>,
+                    isLeaf: true,
+                    type: 'note',
+                    extra: {
+                      id: note.id,
+                      isGroup: extra.isGroup,
+                      key: note.key,
+                      title: note.getDisplayTitle(),
+                      note: noteContent,
+                      noteText: noteText,
+                      link: extra.isGroup ? Zotero.ZoteroExcalidraw.Groups.getZoteroItemUrl(note.key) : Zotero.getMainWindow().Zotero.ZoteroExcalidraw.Items.getZoteroUrl(note.key)
+                    }
+                  })
+                }
+
+                Zotero.ZoteroExcalidraw.Logger.log(1421);
+                for (let index = 0; index < item.getAttachments().length; index++) {
+                  const id = item.getAttachments()[index];
+                  Zotero.ZoteroExcalidraw.Logger.trace(1423, id);
+                  var attachment = Zotero.Items.get(id)
+                  if (attachment.attachmentContentType !== 'application/pdf') {
+                    continue;
+                  }
+
+                  var annotations = []
+                  for (let index = 0; index < attachment.getAnnotations().length; index++) {
+                    const ee = attachment.getAnnotations()[index]
+                    let annotationImage
+                    let annotationWidth
+                    let annotationHeight
+                    if (['image', 'ink'].includes(ee.annotationType)) {
+                      annotationImage = await Zotero.ZoteroExcalidraw.Utils.loadAnnotationImg(ee)
+                      var annotationPosition = JSON.parse(ee.annotationPosition)
+                      var size = annotationPosition.rects[0]
+                      annotationWidth = size[2] - size[0]
+                      annotationHeight = size[3] - size[1]
+                    }
+                    annotations.push({
+                      id: ee.id,
+                      title: ee.annotationText,
+                      key: ee.key,
+                      annotationType: ee.annotationType, // highlight | image | note
+                      annotationText: ee.annotationText,
+                      annotationComment: ee.annotationComment,
+                      annotationColor: ee.annotationColor,
+                      annotationPageLabel: ee.annotationPageLabel,
+                      annotationImage: annotationImage,
+                      annotationWidth: annotationWidth,
+                      annotationHeight: annotationHeight,
+                      link: `zotero://open-pdf/library/items/${attachment.key}?page=${ee.annotationPageLabel}&annotation=${ee.key}`
+                    })
+                  }
+
+                  _children.push({
+                    key: `attachment-${attachment.id}-${Zotero.Utilities.randomString()}`,
+                    title: attachment.getDisplayTitle(),
+                    icon: <img className="button-icon" src={`chrome://zotero/skin/treeitem-${attachmentItemType(attachment)}@2x.png`}></img>,
+                    disabled: annotations.length === 0,
+                    isLeaf: !(attachment.isFileAttachment() && attachment.attachmentContentType === 'application/pdf') || annotations.length === 0 ? true : undefined,
+                    type: 'attachment',
+                    extra: {
+                      id: attachment.id,
+                      title: attachment.getDisplayTitle(),
+                      isGroup: extra.isGroup,
+                      key: attachment.key,
+                      itemType: attachmentItemType(attachment),
+                      linkMode: Zotero.Attachments.linkModeToName(attachment.attachmentLinkMode),
+                      contentType: attachment.attachmentContentType,
+                      charset: attachment.attachmentCharset,
+                      path: attachment.getFilePath(),
+                      note: attachment.note,
+                      isFileAttachment: attachment.isFileAttachment(),
+                      annotations: annotations
+                    },
+                    children: annotations.map(ee => {
+                      return {
+                        key: `annotation-${ee.key}-${Zotero.Utilities.randomString()}`,
+                        isGroup: extra.isGroup,
+                        title: ee.annotationType === 'highlight' ? ee.annotationText : (ee.annotationType === 'note' ? ee.annotationComment : _l10n.formatValueSync('zotero-excalidraw-region')),
+                        icon: ee.annotationType === 'highlight' ? <svg className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path d="M0 128 1024 128 1024 256 0 256 0 128ZM0 448 1024 448 1024 576 0 576 0 448ZM0 768 704 768 704 896 0 896 0 768Z" p-id="2110" fill={ee.annotationColor}></path></svg> : (ee.annotationType === 'note' ? <svg t="1653009941000" className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2917" width="12" height="12"><path d="M768 832H256V192h512v640m0-704H256c-35.3 0-64 28.7-64 64v640c0 35.3 28.7 64 64 64h512c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64z" p-id="2918" fill={ee.annotationColor}></path><path d="M576.1 352c0 17.7-14.3 32-32 32h-192c-17.7 0-32-14.3-32-32s14.3-32 32-32h192c17.7 0 32 14.3 32 32zM704 480c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h320c17.7 0 32 14.3 32 32zM704 608c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h320c17.7 0 32 14.3 32 32z" p-id="2919" fill={ee.annotationColor}></path></svg> : <svg className="icon" t="1652973021010" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1352" width="10" height="10"><path d="M939.625 13.598c12.7 0 23.062 10.467 23.062 23.165v500H916.53V108.352c0-26.793-21.734-48.563-48.493-48.563H104.99c-26.758 0-48.492 21.77-48.492 48.563v715.462c0 26.791 21.733 48.563 48.492 48.563h428.587v46.19H33.437c-12.732 0-23.096-10.468-23.096-23.165V36.763c0-12.698 10.362-23.165 23.096-23.165h906.188" p-id="1353" fill={ee.annotationColor}></path><path d="M821.719 583.158V774.06h190.796v46.051H821.719v190.902h-46.156V820.109H584.766v-46.051h190.797v-190.9h46.156m-508.06-377.34h0.35l0.174 0.14c9.209 15.071 81.601 134.386 137.455 226.766l20.232 33.214 21.421-32.375a40966.633 40966.633 0 0 1 77.241-116.942c22.256 33.631 115.058 174.295 143.314 217.276H114.175c17.723-30.144 189.471-312.868 198.683-327.798 0-0.001 0.172-0.281 0.801-0.281" p-id="1354" fill={ee.annotationColor}></path></svg>),
+                        isLeaf: true,
+                        type: 'annotation',
+                        link: `zotero://open-pdf/library/items/${attachment.key}?page=${ee.annotationPageLabel}&annotation=${ee.key}`,
+                        extra: ee,
+                      }
+                    })
+                  })
+                }
+              } else {
+                Zotero.ZoteroExcalidraw.Logger.log(`${item.getDisplayTitle()} is not regular item.`);
+              }
+
+              Zotero.ZoteroExcalidraw.Logger.trace(1444, _children.length);
+              setTreeData((origin) =>
+                updateTreeData(origin, key, _children),
+              );
+              resolve();
+              break;
+
+            default:
+              break;
+          }
+        });
+
+        const treeSwitcherIcon = (expanded) => {
+          switch (theme) {
+            case 'light':
+              return expanded ? (<div><svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg></div>) : (<div><svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg></div>)
+            case 'dark':
+              return expanded ? (<div><svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="#cacaca" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg></div>) : (<div><svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="#cacaca" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg></div>)
+            default:
+              break;
+          }
+        }
+
+        const current = (nodeData) => {
+          let keys = nodeData.key.split('-');
+          let type = keys[0];
+          let id = parseInt(keys[1]);
+          
+          let isCurrent = dataIn.items.find(e => e.type === type && e.id === id);
+          return isCurrent ? <strong>{_l10n.formatValueSync('zotero-excalidraw-current')}</strong> : null;
+        }
+
+        const titleRender = (nodeData) => {
+          if (nodeData.disabled) {
+            return <span className="single-line">{nodeData.title}</span>;
+          } else {
+            let currentText = current(nodeData);
+            return <Dropdown overlay={<Menu>
+              <Menu.Item key="0" disabled={nodeData.type !== 'item' && nodeData.type !== 'annotation' && nodeData.type !== 'note'}>
+                <a onClick={() => { onTreeAddExcalidraw(nodeData) }}><img className="zotero-button-icon" src="chrome://zotero/skin/plus.png"></img>  {_l10n.formatValueSync('zotero-excalidraw-add-canvas')}</a>
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item key="1" onClick={() => {
+                if (nodeData.type === 'collection') {
+                  Zotero.ZoteroExcalidraw.Collections.selectCollection(nodeData.extra.id);
+                } else {
+                  Zotero.ZoteroExcalidraw.Items.selectItem(nodeData.extra.collectionID, nodeData.extra.id);
+                }
+                Zotero.getMainWindow().Zotero_Tabs.select('zotero-pane');
+              }}>
+                <a><img className="zotero-button-icon" src="chrome://zotero-excalidraw/content/images/zotero32.png"></img> {_l10n.formatValueSync('zotero-excalidraw-positioning-at-zotero')}</a>
+              </Menu.Item>
+            </Menu>} trigger={['click']}>
+              <span className="text ant-dropdown-link single-line">
+                {nodeData.title} {currentText}
+              </span>
+            </Dropdown>
+          }
+        }
+
+        function updateTreeData(list, key, children) {
+          return list.map((node) => {
+            if (node.key === key) {
+              if (children.length === 0) {
+                node.isLeaf = true
+              }
+              return { ...node, children };
+            }
+
+            if (node.children) {
+              return { ...node, children: updateTreeData(node.children, key, children) };
+            }
+
+            return node;
+          });
+        }
+
+        const attachmentItemType = function (attachment) {
+          var attachmentItemType
+          switch (attachment.attachmentLinkMode) {
+            case Zotero.Attachments.LINK_MODE_IMPORTED_FILE:
+              attachmentItemType = attachment.attachmentContentType === "application/pdf" ? 'attachment-pdf' : 'attachment-imported';
+              break;
+            case Zotero.Attachments.LINK_MODE_IMPORTED_URL:
+              attachmentItemType = attachment.attachmentContentType === "application/pdf" ? 'attachment-pdf' : 'attachment-snapshot';
+              break;
+            case Zotero.Attachments.LINK_MODE_LINKED_FILE:
+              attachmentItemType = attachment.attachmentContentType === "application/pdf" ? 'attachment-pdf-link' : 'attachment-link';
+              break;
+            case Zotero.Attachments.LINK_MODE_LINKED_URL:
+              attachmentItemType = 'attachment-web-link';
+              break;
+            default:
+              break;
+          }
+          return attachmentItemType
+        }
+
+        const renderTopRightUI = () => {
+          return (
+            <div className="Stack Stack_horizontal">
+              <Button title={_l10n.formatValueSync('zotero-excalidraw-positioning-at-zotero')} className="button__icon" size="small" onClick={() => {
+                Zotero.getMainWindow().ZoteroPane.selectItem(_attachment.id);
+              }}>
+                <img className="zotero-button-icon" src="chrome://zotero-excalidraw/content/images/zotero32.png"></img>
+              </Button>
+              <Divider type="vertical" />
+              <Button title={_l10n.formatValueSync('zotero-excalidraw-hide-left')} className="button__icon" size="small" onClick={() => {
+                if (treeWidth === 0) {
+                  setTreeWidth(_profiles.normal.treeWidth)
+                } else {
+                  setTreeWidth(0)
+                }
+              }}>
+                <svg t="1675751382151" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9403" width="22" height="22"><path fill={theme === 'dark' ? '#ced4da' : '#212529'} d="M798 272.8c-19.8-18.9-46.7-29.5-74.7-29.5H300.7c-28 0-54.9 10.6-74.7 29.5-19.8 18.9-30.9 44.5-30.9 71.2v335.8c0 26.7 11.1 52.3 30.9 71.2 19.8 18.9 46.7 29.5 74.7 29.5h422.6c28 0 54.9-10.6 74.7-29.5 19.8-18.9 30.9-44.5 30.9-71.2V344.1c0-26.7-11.1-52.4-30.9-71.3zM406.4 713.5H300.7c-9.3 0-18.3-3.5-24.9-9.8-6.6-6.3-10.3-14.8-10.3-23.7V344.1c0-8.9 3.7-17.4 10.3-23.7 6.6-6.3 15.6-9.8 24.9-9.8h105.6v402.9z m352.1-33.6c0 8.9-3.7 17.4-10.3 23.7-6.6 6.3-15.6 9.8-24.9 9.8H476.8v-403h246.5c9.3 0 18.3 3.5 24.9 9.8 6.6 6.3 10.3 14.8 10.3 23.7v336z" p-id="9404" data-spm-anchor-id="a313x.7781069.0.i0"></path></svg>
+              </Button>
+              <div style={{width: '0.5em'}}></div>
+              <Button title={_l10n.formatValueSync('zotero-excalidraw-hide-right')} className="button__icon" size="small" onClick={() => {
+                if (paneWidth === 0) {
+                  setPaneWidth(_profiles.normal.paneWidth)
+                } else {
+                  setPaneWidth(0)
+                }
+              }}>
+                <svg t="1675751446179" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9872" width="22" height="22"><path fill={theme === 'dark' ? '#ced4da' : '#212529'} d="M195.1 344.1v335.8c0 26.7 11.1 52.3 30.9 71.2 19.8 18.9 46.7 29.5 74.7 29.5h422.6c28 0 54.9-10.6 74.7-29.5 19.8-18.9 30.9-44.5 30.9-71.2V344.1c0-26.7-11.1-52.3-30.9-71.2-19.8-18.9-46.7-29.5-74.7-29.5H300.7c-28 0-54.9 10.6-74.7 29.5-19.8 18.8-30.9 44.5-30.9 71.2z m422.5-33.6h105.6c9.3 0 18.3 3.5 24.9 9.8 6.6 6.3 10.3 14.8 10.3 23.7v335.8c0 8.9-3.7 17.4-10.3 23.7-6.6 6.3-15.6 9.8-24.9 9.8H617.6V310.5z m-352.1 33.6c0-8.9 3.7-17.4 10.3-23.7 6.6-6.3 15.6-9.8 24.9-9.8h246.5v403H300.7c-9.3 0-18.3-3.5-24.9-9.8-6.6-6.3-10.3-14.8-10.3-23.7v-336z" p-id="9873"></path></svg>
+              </Button>
+              <Divider type="vertical" />
+              <Button loading={saving.current} title="保存到Zotero" className="button__icon" size="small" onClick={() => onSave()}>
+                <svg t="1651379370033" viewBox="0 0 1073 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5473" width="18" height="18"><path fill={theme === 'dark' ? '#ced4da' : '#212529'} d="M190.526479 1023.999744h691.891719a190.782735 190.782735 0 0 0 191.038991-190.526479V190.526479A190.782735 190.782735 0 0 0 882.802582 0h-691.891719A190.782735 190.782735 0 0 0 0 190.526479v642.946786a190.782735 190.782735 0 0 0 190.526479 190.526479z m0-939.563329h25.625619v259.203139a145.809773 145.809773 0 0 0 146.06603 145.681645h350.942855A145.809773 145.809773 0 0 0 858.458244 343.639554V84.436415h24.344338a106.218192 106.218192 0 0 1 106.218192 106.090064v642.946786a106.34632 106.34632 0 0 1-106.218192 106.090063h-691.891719a106.218192 106.218192 0 0 1-106.090063-106.090063V190.526479a106.090064 106.090064 0 0 1 105.705679-106.090064z m110.446419 6.406405h474.073955v252.796734a61.373358 61.373358 0 0 1-61.24523 61.24523H362.218128a61.24523 61.24523 0 0 1-61.24523-61.24523z" p-id="5474"></path><path d="M693.81364 397.197098a42.154144 42.154144 0 0 0 42.282272-42.154144v-153.753715a42.282272 42.282272 0 0 0-84.436415 0v153.753715A42.154144 42.154144 0 0 0 693.81364 397.197098z" p-id="5475"></path></svg>
+              </Button>
+            </div>
+          );
+        };
+
+        const settingsForm = ((defaultStyleForm, defaultStyle, onDefaultStyleChange, actual) => {
+          return <Form
+            form={defaultStyleForm}
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 20 }}
+            initialValues={defaultStyle}
+            onValuesChange={onDefaultStyleChange}
+            layout="horizontal"
+            colon={false}
+          >
+              <Form.Item name="width" label={_l10n.formatValueSync('zotero-excalidraw-setting-width')} rules={[
+              {
+                  required: true,
+                  message: _l10n.formatValueSync('zotero-excalidraw-setting-required'),
+              }]}>
+              <InputNumber step={5} min={100} max={400} />
+              </Form.Item>
+              <Form.Item name="strokeColor" label={_l10n.formatValueSync('zotero-excalidraw-setting-strokeColor')} rules={[
+                  {
+                  required: true,
+                  message: _l10n.formatValueSync('zotero-excalidraw-setting-required'),
+                  },
+                  () => ({
+                  validator(_, value) {
+                      if (/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/g.test(value)) {
+                      return Promise.resolve();
+                      } else {
+                      return Promise.reject(new Error(_l10n.formatValueSync('zotero-excalidraw-setting-input-color')));
+                      }
+                  },
+                  }),
+              ]}>
+              <Input className="settings-input-item" addonBefore="#" addonAfter={
+                  <Dropdown overlay={
+                  <Menu>
+                      <Menu.Item key="000000" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#000000', color: '#000000', width: '50px', height: '50px'}}>黑色</span> (#000000)</Menu.Item>
+                      <Menu.Item key="343a40" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#343a40', color: '#343a40', width: '50px', height: '50px'}}>灰色</span> (#343a40)</Menu.Item>
+                      <Menu.Item key="495057" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#495057', color: '#495057', width: '50px', height: '50px'}}>灰色</span> (#495057)</Menu.Item>
+                      <Menu.Item key="c92a2a" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#c92a2a', color: '#c92a2a', width: '50px', height: '50px'}}>红色</span> (#c92a2a)</Menu.Item>
+                      <Menu.Item key="a61e4d" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#a61e4d', color: '#a61e4d', width: '50px', height: '50px'}}>粉红</span> (#a61e4d)</Menu.Item>
+                      <Menu.Item key="862e9c" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#862e9c', color: '#862e9c', width: '50px', height: '50px'}}>紫红</span> (#862e9c)</Menu.Item>
+                      <Menu.Item key="5f3dc4" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#5f3dc4', color: '#5f3dc4', width: '50px', height: '50px'}}>蓝紫</span> (#5f3dc4)</Menu.Item>
+                      <Menu.Item key="364fc7" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#364fc7', color: '#364fc7', width: '50px', height: '50px'}}>靛蓝</span> (#364fc7)</Menu.Item>
+                      <Menu.Item key="1864ab" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#1864ab', color: '#1864ab', width: '50px', height: '50px'}}>蓝色</span> (#1864ab)</Menu.Item>
+                      <Menu.Item key="0b7285" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#0b7285', color: '#0b7285', width: '50px', height: '50px'}}>青色</span> (#0b7285)</Menu.Item>
+                      <Menu.Item key="087f5b" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#087f5b', color: '#087f5b', width: '50px', height: '50px'}}>蓝绿</span> (#087f5b)</Menu.Item>
+                      <Menu.Item key="2b8a3e" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#2b8a3e', color: '#2b8a3e', width: '50px', height: '50px'}}>绿色</span> (#2b8a3e)</Menu.Item>
+                      <Menu.Item key="5c940d" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#5c940d', color: '#5c940d', width: '50px', height: '50px'}}>柠檬</span> (#5c940d)</Menu.Item>
+                      <Menu.Item key="e67700" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#fab005', color: '#fab005', width: '50px', height: '50px'}}>黄色</span> (#fab005)</Menu.Item>
+                      <Menu.Item key="d9480f" onClick={(event) => onChangeColor({strokeColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#d9480f', color: '#d9480f', width: '50px', height: '50px'}}>橙色</span> (#d9480f)</Menu.Item>
+                  </Menu>
+                  } trigger={['click']}>
+                  <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                      {_l10n.formatValueSync('zotero-excalidraw-setting-presuppose')}
+                  </a>
+              </Dropdown>
+              }/>
+              </Form.Item>
+              <Form.Item name="backgroundColor" label={_l10n.formatValueSync('zotero-excalidraw-setting-backgroundColor')} rules={[
+                  {
+                  required: true,
+                  message: _l10n.formatValueSync('zotero-excalidraw-setting-required'),
+                  },
+                  () => ({
+                  validator(_, value) {
+                      var reg = actual ? /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|transparent|actual)$/g : /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|transparent)$/g
+                      if (reg.test(value)) {
+                      return Promise.resolve();
+                      } else {
+                      return Promise.reject(new Error(_l10n.formatValueSync('zotero-excalidraw-setting-input-color')));
+                      }
+                  },
+                  }),
+              ]}>
+              <Input className="settings-input-item" style={{color: defaultStyle.backgroundColor}} addonBefore="#" addonAfter={
+                  <Dropdown overlay={
+                  <Menu>
+                      {actual ? <Menu.Item key="actual" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#000000', color: '#000000', width: '50px', height: '50px'}}>实际</span> (actual)</Menu.Item> : null}
+                      <Menu.Item key="transparent" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><img className="transparent-icon"></img> (transparent)</Menu.Item>
+                      <Menu.Item key="ffffff" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#ffffff', color: '#ffffff', width: '50px', height: '50px'}}>白色</span> (#ffffff)</Menu.Item>
+                      <Menu.Item key="ced4da" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#ced4da', color: '#ced4da', width: '50px', height: '50px'}}>灰色</span> (#ced4da)</Menu.Item>
+                      <Menu.Item key="868e96" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#868e96', color: '#868e96', width: '50px', height: '50px'}}>灰色</span> (#868e96)</Menu.Item>
+                      <Menu.Item key="fa5252" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#fa5252', color: '#fa5252', width: '50px', height: '50px'}}>红色</span> (#fa5252)</Menu.Item>
+                      <Menu.Item key="e64980" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#e64980', color: '#e64980', width: '50px', height: '50px'}}>粉红</span> (#e64980)</Menu.Item>
+                      <Menu.Item key="be4bdb" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#be4bdb', color: '#be4bdb', width: '50px', height: '50px'}}>紫红</span> (#be4bdb)</Menu.Item>
+                      <Menu.Item key="7950f2" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#7950f2', color: '#7950f2', width: '50px', height: '50px'}}>蓝紫</span> (#7950f2)</Menu.Item>
+                      <Menu.Item key="4c6ef5" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#4c6ef5', color: '#4c6ef5', width: '50px', height: '50px'}}>靛蓝</span> (#4c6ef5)</Menu.Item>
+                      <Menu.Item key="228be6" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#228be6', color: '#228be6', width: '50px', height: '50px'}}>蓝色</span> (#228be6)</Menu.Item>
+                      <Menu.Item key="15aabf" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#15aabf', color: '#15aabf', width: '50px', height: '50px'}}>青色</span> (#15aabf)</Menu.Item>
+                      <Menu.Item key="12b886" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#12b886', color: '#12b886', width: '50px', height: '50px'}}>蓝绿</span> (#12b886)</Menu.Item>
+                      <Menu.Item key="40c057" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#40c057', color: '#40c057', width: '50px', height: '50px'}}>绿色</span> (#40c057)</Menu.Item>
+                      <Menu.Item key="82c91e" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#82c91e', color: '#82c91e', width: '50px', height: '50px'}}>柠檬</span> (#82c91e)</Menu.Item>
+                      <Menu.Item key="fab005" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#fab005', color: '#fab005', width: '50px', height: '50px'}}>黄色</span> (#fab005)</Menu.Item>
+                      <Menu.Item key="fd7e14" onClick={(event) => onChangeColor({backgroundColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#fd7e14', color: '#fd7e14', width: '50px', height: '50px'}}>橙色</span> (#fd7e14)</Menu.Item>
+                  </Menu>
+                  } trigger={['click']}>
+                  <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                      {_l10n.formatValueSync('zotero-excalidraw-setting-presuppose')}
+                  </a>
+                  </Dropdown>
+              }/>
+              </Form.Item>
+              <Form.Item name="fillStyle" label={_l10n.formatValueSync('zotero-excalidraw-setting-fillStyle')}>
+              <Radio.Group>
+              <Radio.Button value="hachure"><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20"><path fillRule="evenodd" clipRule="evenodd" d="M20.101 16H28.0934L36 8.95989V4H33.5779L20.101 16ZM30.5704 4L17.0935 16H9.10101L22.5779 4H30.5704ZM19.5704 4L6.09349 16H4V10.7475L11.5779 4H19.5704ZM8.57036 4H4V8.06952L8.57036 4ZM36 11.6378L31.101 16H36V11.6378ZM2 2V18H38V2H2Z" fill="currentColor"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-fillStyle-hachure')}</span></div></Radio.Button>
+              <Radio.Button value="cross-hatch"><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20"><g fill="currentColor" fillRule="evenodd" clipRule="evenodd"><path d="M20.101 16H28.0934L36 8.95989V4H33.5779L20.101 16ZM30.5704 4L17.0935 16H9.10101L22.5779 4H30.5704ZM19.5704 4L6.09349 16H4V10.7475L11.5779 4H19.5704ZM8.57036 4H4V8.06952L8.57036 4ZM36 11.6378L31.101 16H36V11.6378ZM2 2V18H38V2H2Z"></path><path d="M14.0001 18L3.00006 4.00002L4.5727 2.76438L15.5727 16.7644L14.0001 18ZM25.0001 18L14.0001 4.00002L15.5727 2.76438L26.5727 16.7644L25.0001 18ZM36.0001 18L25.0001 4.00002L26.5727 2.76438L37.5727 16.7644L36.0001 18Z"></path></g></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-fillStyle-cross-hatch')}</span></div></Radio.Button>
+              <Radio.Button value="solid"><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20"><path d="M2 2H38V18H2V2Z" fill="currentColor"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-fillStyle-solid')}</span></div></Radio.Button>
+              </Radio.Group>
+              </Form.Item>
+              <Form.Item name="strokeWidth" label={_l10n.formatValueSync('zotero-excalidraw-setting-strokeWidth')}>
+              <Radio.Group>
+                  <Radio.Button value={1}><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" ><path d="M6 10H32" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-strokeWidth-1')}</span></div></Radio.Button>
+                  <Radio.Button value={2}><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" ><path d="M6 10H32" stroke="currentColor" strokeWidth="6" strokeLinecap="round" fill="none"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-strokeWidth-2')}</span></div></Radio.Button>
+                  <Radio.Button value={4}><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" ><path d="M6 10H32" stroke="currentColor" strokeWidth="10" strokeLinecap="round" fill="none"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-strokeWidth-4')}</span></div></Radio.Button>
+              </Radio.Group>
+              </Form.Item>
+              <Form.Item name="strokeStyle" label={_l10n.formatValueSync('zotero-excalidraw-setting-strokeStyle')}>
+              <Radio.Group>
+                  <Radio.Button value="solid"><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" ><path d="M6 10H34" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-strokeStyle-solid')}</span></div></Radio.Button>
+                  <Radio.Button value="dashed"><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" ><path d="M6 10H34" stroke="currentColor" strokeWidth="2.5" strokeDasharray="10, 8" fill="none" strokeLinecap="round"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-strokeStyle-dashed')}</span></div></Radio.Button>
+                  <Radio.Button value="dotted"><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" ><path d="M6 10H36" stroke="currentColor" strokeWidth="2.5" strokeDasharray="2, 4.5" fill="none" strokeLinecap="round"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-strokeStyle-dotted')}</span></div></Radio.Button>
+              </Radio.Group>
+              </Form.Item>
+              <Form.Item name="roughness" label={_l10n.formatValueSync('zotero-excalidraw-setting-roughness')}>
+              <Radio.Group>
+                  <Radio.Button value={0}><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" className="rtl-mirror"><path d="M3.00098 16.1691C6.28774 13.9744 19.6399 2.8905 22.7215 3.00082C25.8041 3.11113 19.1158 15.5488 21.4962 16.8309C23.8757 18.1131 34.4155 11.7148 37.0001 10.6919" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-roughness-0')}</span></div></Radio.Button>
+                  <Radio.Button value={1}><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" className="rtl-mirror"><path d="M3 17C6.68158 14.8752 16.1296 9.09849 22.0648 6.54922C28 3.99995 22.2896 13.3209 25 14C27.7104 14.6791 36.3757 9.6471 36.3757 9.6471M6.40706 15C13 11.1918 20.0468 1.51045 23.0234 3.0052C26 4.49995 20.457 12.8659 22.7285 16.4329C25 20 36.3757 13 36.3757 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-roughness-1')}</span></div></Radio.Button>
+                  <Radio.Button value={2}><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" className="rtl-mirror"><path d="M3 15.6468C6.93692 13.5378 22.5544 2.81528 26.6206 3.00242C30.6877 3.18956 25.6708 15.3346 27.4009 16.7705C29.1309 18.2055 35.4001 12.4762 37 11.6177M3.97143 10.4917C6.61158 9.24563 16.3706 2.61886 19.8104 3.01724C23.2522 3.41472 22.0773 12.2013 24.6181 12.8783C27.1598 13.5536 33.3179 8.04068 35.0571 7.07244" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-roughness-2')}</span></div></Radio.Button>
+              </Radio.Group>
+              </Form.Item>
+              <Form.Item name="strokeSharpness" label={_l10n.formatValueSync('zotero-excalidraw-setting-strokeSharpness')}>
+              <Radio.Group>
+                  <Radio.Button value="sharp"><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" className="rtl-mirror"><path d="M10 17L10 5L35 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-strokeSharpness-sharp')}</span></div></Radio.Button>
+                  <Radio.Button value="round"><div><svg style={{width: '20px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 40 20" className="rtl-mirror"><path d="M10 17V15C10 8 13 5 21 5L33.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-strokeSharpness-round')}</span></div></Radio.Button>
+              </Radio.Group>
+              </Form.Item>
+              <Form.Item name="fontColor" label={_l10n.formatValueSync('zotero-excalidraw-setting-fontColor')} rules={[
+                  {
+                  required: true,
+                  message: _l10n.formatValueSync('zotero-excalidraw-setting-required'),
+                  },
+                  () => ({
+                  validator(_, value) {
+                      if (/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/g.test(value)) {
+                      return Promise.resolve();
+                      } else {
+                      return Promise.reject(new Error(_l10n.formatValueSync('zotero-excalidraw-setting-input-color')));
+                      }
+                  },
+                  }),
+              ]}>
+              <Input className="settings-input-item" addonBefore="#" addonAfter={
+                  <Dropdown overlay={
+                  <Menu>
+                      <Menu.Item key="000000" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#000000', color: '#000000', width: '50px', height: '50px'}}>黑色</span> (#000000)</Menu.Item>
+                      <Menu.Item key="343a40" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#343a40', color: '#343a40', width: '50px', height: '50px'}}>灰色</span> (#343a40)</Menu.Item>
+                      <Menu.Item key="495057" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#495057', color: '#495057', width: '50px', height: '50px'}}>灰色</span> (#495057)</Menu.Item>
+                      <Menu.Item key="c92a2a" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#c92a2a', color: '#c92a2a', width: '50px', height: '50px'}}>红色</span> (#c92a2a)</Menu.Item>
+                      <Menu.Item key="a61e4d" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#a61e4d', color: '#a61e4d', width: '50px', height: '50px'}}>粉红</span> (#a61e4d)</Menu.Item>
+                      <Menu.Item key="862e9c" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#862e9c', color: '#862e9c', width: '50px', height: '50px'}}>紫红</span> (#862e9c)</Menu.Item>
+                      <Menu.Item key="5f3dc4" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#5f3dc4', color: '#5f3dc4', width: '50px', height: '50px'}}>蓝紫</span> (#5f3dc4)</Menu.Item>
+                      <Menu.Item key="364fc7" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#364fc7', color: '#364fc7', width: '50px', height: '50px'}}>靛蓝</span> (#364fc7)</Menu.Item>
+                      <Menu.Item key="1864ab" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#1864ab', color: '#1864ab', width: '50px', height: '50px'}}>蓝色</span> (#1864ab)</Menu.Item>
+                      <Menu.Item key="0b7285" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#0b7285', color: '#0b7285', width: '50px', height: '50px'}}>青色</span> (#0b7285)</Menu.Item>
+                      <Menu.Item key="087f5b" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#087f5b', color: '#087f5b', width: '50px', height: '50px'}}>蓝绿</span> (#087f5b)</Menu.Item>
+                      <Menu.Item key="2b8a3e" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#2b8a3e', color: '#2b8a3e', width: '50px', height: '50px'}}>绿色</span> (#2b8a3e)</Menu.Item>
+                      <Menu.Item key="5c940d" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#5c940d', color: '#5c940d', width: '50px', height: '50px'}}>柠檬</span> (#5c940d)</Menu.Item>
+                      <Menu.Item key="e67700" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#fab005', color: '#fab005', width: '50px', height: '50px'}}>黄色</span> (#fab005)</Menu.Item>
+                      <Menu.Item key="d9480f" onClick={(event) => onChangeColor({fontColor:  event.key}, defaultStyleForm, onDefaultStyleChange)}><span style={{backgroundColor: '#d9480f', color: '#d9480f', width: '50px', height: '50px'}}>橙色</span> (#d9480f)</Menu.Item>
+                  </Menu>
+                  } trigger={['click']}>
+                  <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                      {_l10n.formatValueSync('zotero-excalidraw-setting-presuppose')}
+                  </a>
+              </Dropdown>
+              }/>
+              </Form.Item>
+              <Form.Item name="fontSize" label={_l10n.formatValueSync('zotero-excalidraw-setting-fontSize')}>
+              <Radio.Group>
+                  <Radio.Button value={16}><strong>S</strong></Radio.Button>
+                  <Radio.Button value={20}><strong>M</strong></Radio.Button>
+                  <Radio.Button value={28}><strong>L</strong></Radio.Button>
+                  <Radio.Button value={36}><strong>XL</strong></Radio.Button>
+              </Radio.Group>
+              </Form.Item>
+              <Form.Item name="fontFamily" label={_l10n.formatValueSync('zotero-excalidraw-setting-fontFamily')}>
+              <Radio.Group>
+                  <Radio.Button value={1}><div><svg style={{width: '10px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 448 512" ><path fill="currentColor" d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-fontFamily-1')}</span></div></Radio.Button>
+                  <Radio.Button value={2}><div><svg style={{width: '10px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 70 78" ><path fill="currentColor" d="M 63.818 71.68 L 54.492 71.68 L 45.898 49.561 L 17.578 49.561 L 9.082 71.68 L 0 71.68 L 27.881 0 L 35.986 0 L 63.818 71.68 Z M 20.605 41.602 L 43.213 41.602 L 35.205 19.971 L 31.787 9.277 Q 30.322 15.137 28.711 19.971 L 20.605 41.602 Z"></path><path fill="currentColor" d="M 68.994 71.68 L 52.686 71.68 L 47.51 54.688 L 21.484 54.688 L 16.309 71.68 L 0 71.68 L 25.195 0 L 43.701 0 L 68.994 71.68 Z M 25.293 41.992 L 43.896 41.992 A 27590.463 27590.463 0 0 1 42.2 36.532 Q 36.965 19.676 35.937 16.273 A 120.932 120.932 0 0 1 35.815 15.869 A 131.65 131.65 0 0 1 35.396 14.435 Q 34.951 12.879 34.675 11.741 A 34.866 34.866 0 0 1 34.521 11.084 A 141.762 141.762 0 0 1 33.706 14.075 Q 31.482 21.957 25.293 41.992 Z"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-fontFamily-2')}</span></div></Radio.Button>
+                  <Radio.Button value={3}><div><svg style={{width: '10px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 640 512" ><path fill="currentColor" d="M278.9 511.5l-61-17.7c-6.4-1.8-10-8.5-8.2-14.9L346.2 8.7c1.8-6.4 8.5-10 14.9-8.2l61 17.7c6.4 1.8 10 8.5 8.2 14.9L293.8 503.3c-1.9 6.4-8.5 10.1-14.9 8.2zm-114-112.2l43.5-46.4c4.6-4.9 4.3-12.7-.8-17.2L117 256l90.6-79.7c5.1-4.5 5.5-12.3.8-17.2l-43.5-46.4c-4.5-4.8-12.1-5.1-17-.5L3.8 247.2c-5.1 4.7-5.1 12.8 0 17.5l144.1 135.1c4.9 4.6 12.5 4.4 17-.5zm327.2.6l144.1-135.1c5.1-4.7 5.1-12.8 0-17.5L492.1 112.1c-4.8-4.5-12.4-4.3-17 .5L431.6 159c-4.6 4.9-4.3 12.7.8 17.2L523 256l-90.6 79.7c-5.1 4.5-5.5 12.3-.8 17.2l43.5 46.4c4.5 4.9 12.1 5.1 17 .6z"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-fontFamily-3')}</span></div></Radio.Button>
+              </Radio.Group>
+              </Form.Item>
+              <Form.Item name="textAlign" label={_l10n.formatValueSync('zotero-excalidraw-setting-textAlign')}>
+              <Radio.Group>
+                  <Radio.Button value="left"><div><svg style={{width: '10px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 448 512" ><path d="M12.83 352h262.34A12.82 12.82 0 00288 339.17v-38.34A12.82 12.82 0 00275.17 288H12.83A12.82 12.82 0 000 300.83v38.34A12.82 12.82 0 0012.83 352zm0-256h262.34A12.82 12.82 0 00288 83.17V44.83A12.82 12.82 0 00275.17 32H12.83A12.82 12.82 0 000 44.83v38.34A12.82 12.82 0 0012.83 96zM432 160H16a16 16 0 00-16 16v32a16 16 0 0016 16h416a16 16 0 0016-16v-32a16 16 0 00-16-16zm0 256H16a16 16 0 00-16 16v32a16 16 0 0016 16h416a16 16 0 0016-16v-32a16 16 0 00-16-16z" fill="currentColor" strokeLinecap="round"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-textAlign-left')}</span></div></Radio.Button>
+                  <Radio.Button value="center"><div><svg style={{width: '10px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 448 512" ><path d="M432 160H16a16 16 0 00-16 16v32a16 16 0 0016 16h416a16 16 0 0016-16v-32a16 16 0 00-16-16zm0 256H16a16 16 0 00-16 16v32a16 16 0 0016 16h416a16 16 0 0016-16v-32a16 16 0 00-16-16zM108.1 96h231.81A12.09 12.09 0 00352 83.9V44.09A12.09 12.09 0 00339.91 32H108.1A12.09 12.09 0 0096 44.09V83.9A12.1 12.1 0 00108.1 96zm231.81 256A12.09 12.09 0 00352 339.9v-39.81A12.09 12.09 0 00339.91 288H108.1A12.09 12.09 0 0096 300.09v39.81a12.1 12.1 0 0012.1 12.1z" fill="currentColor"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-textAlign-center')}</span></div></Radio.Button>
+                  <Radio.Button value="right"><div><svg style={{width: '10px'}} aria-hidden="true" focusable="false" role="img" viewBox="0 0 448 512" ><path d="M16 224h416a16 16 0 0016-16v-32a16 16 0 00-16-16H16a16 16 0 00-16 16v32a16 16 0 0016 16zm416 192H16a16 16 0 00-16 16v32a16 16 0 0016 16h416a16 16 0 0016-16v-32a16 16 0 00-16-16zm3.17-384H172.83A12.82 12.82 0 00160 44.83v38.34A12.82 12.82 0 00172.83 96h262.34A12.82 12.82 0 00448 83.17V44.83A12.82 12.82 0 00435.17 32zm0 256H172.83A12.82 12.82 0 00160 300.83v38.34A12.82 12.82 0 00172.83 352h262.34A12.82 12.82 0 00448 339.17v-38.34A12.82 12.82 0 00435.17 288z" fill="currentColor" strokeLinecap="round"></path></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-textAlign-right')}</span></div></Radio.Button>
+              </Radio.Group>
+              </Form.Item>
+              <Form.Item name="verticalAlign" label={_l10n.formatValueSync('zotero-excalidraw-setting-verticalAlign')}>
+              <Radio.Group>
+                  <Radio.Button value="top"><div>
+                    <svg
+                      style={{width: '15px'}}
+                      aria-hidden="true"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 24 24"
+                    >
+                    <g
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <line x1="4" y1="4" x2="20" y2="4" />
+                      <rect x="9" y="8" width="6" height="12" rx="2" />
+                    </g></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-verticalAlign-top')}</span></div>
+                    </Radio.Button>
+                  <Radio.Button value="middle"><div><svg
+                      style={{width: '15px'}}
+                      aria-hidden="true"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 24 24"
+                    >
+                    <g
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <line x1="4" y1="12" x2="9" y2="12" />
+                      <line x1="15" y1="12" x2="20" y2="12" />
+                      <rect x="9" y="6" width="6" height="12" rx="2" />
+                    </g></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-verticalAlign-middle')}</span></div></Radio.Button>
+                  <Radio.Button value="bottom"><div><svg
+                      style={{width: '15px'}}
+                      aria-hidden="true"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        strokeWidth="2"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <line x1="4" y1="20" x2="20" y2="20" />
+                        <rect x="9" y="4" width="6" height="12" rx="2"></rect>
+                      </g></svg> <span>{_l10n.formatValueSync('zotero-excalidraw-setting-verticalAlign-bottom')}</span></div></Radio.Button>
+                  </Radio.Group>
+              </Form.Item>
+              <Form.Item name="opacity" label={_l10n.formatValueSync('zotero-excalidraw-setting-opacity')}>
+              <Slider className="transparent-degree" step={10} />
+              </Form.Item>
+          </Form>
+        })
+
+        return <Layout className="App">
+          <Sider width={treeWidth}>
+            <Tree
+              className={'tree fill-height tree-' + theme}
+              blockNode
+              showIcon
+              switcherIcon={treeSwitcherIcon()}
+              titleRender={titleRender}
+              loadData={onLoadTreeData}
+              treeData={treeData}
+            />
+          </Sider>
+
+          <Content id="content" className="content fill-height">
+            <div className="excalidraw-wrapper">
+              <Excalidraw
+                ref={(api) => setExcalidrawAPI(api)}
+                excalidrawAPI={(api) => setExcalidrawAPI(api)}
+                langCode={Zotero.locale}
+                initialData={initialStatePromiseRef.current.promise}
+                // onPaste={onPaste}
+                onLibraryChange={onLibraryChange}
+                onChange={onChange}
+                gridModeEnabled={gridModeEnabled}
+                theme={theme}
+                UIOptions={{
+                  canvasActions: {
+                    changeViewBackgroundColor: true,
+                    clearCanvas: false,
+                    export: {
+                      saveFileToDisk: true
+                    },
+                    loadScene: true,
+                    saveToActiveFile: true,
+                    toggleTheme: true,
+                    saveAsImage: true
+                  }
+                }}
+                renderTopRightUI={renderTopRightUI}
+                onLinkOpen={onLinkOpen}
+              >
+                <MainMenu>
+                  <MainMenu.Item onSelect={onSaveAs}>
+                    {_l10n.formatValueSync('zotero-excalidraw-saveas')}
+                  </MainMenu.Item>
+                  <MainMenu.Item onSelect={onExport}>
+                    {_l10n.formatValueSync('zotero-excalidraw-import')}
+                  </MainMenu.Item>
+                  <MainMenu.Item onSelect={onOpen}>
+                    {_l10n.formatValueSync('zotero-excalidraw-open')}
+                  </MainMenu.Item>
+                  <MainMenu.Separator />
+                  <MainMenu.Item onSelect={onClear}>
+                    {_l10n.formatValueSync('zotero-excalidraw-clear')}
+                  </MainMenu.Item>
+                  <MainMenu.Separator />
+                  <MainMenu.Item onSelect={onSaveTxt}>
+                    {_l10n.formatValueSync('zotero-excalidraw-savetxt')}
+                  </MainMenu.Item>
+                  <MainMenu.Item onSelect={onSavePng}>
+                    {_l10n.formatValueSync('zotero-excalidraw-savepng')}
+                  </MainMenu.Item>
+                  <MainMenu.Item onSelect={onSaveSvg}>
+                    {_l10n.formatValueSync('zotero-excalidraw-savesvg')}
+                  </MainMenu.Item>
+                  <MainMenu.Item onSelect={onCopyPng}>
+                    {_l10n.formatValueSync('zotero-excalidraw-copypng')}
+                  </MainMenu.Item>
+                  <MainMenu.Item onSelect={onCopySvg}>
+                    {_l10n.formatValueSync('zotero-excalidraw-copysvg')}
+                  </MainMenu.Item>
+                  <MainMenu.Separator />
+                  <MainMenu.Item onSelect={() => setIsOptionModalVisible(true)}>
+                    {_l10n.formatValueSync('zotero-excalidraw-settings')}
+                  </MainMenu.Item>
+                </MainMenu>
+              </Excalidraw>
+            </div>
+          </Content>
+
+          <Sider width={paneWidth}>
+            <Tabs className={'pane-tabs fill-height fill-width pane pane-' + theme} size="small" type="card" centered={true}>
+              <TabPane tab={_l10n.formatValueSync('zotero-excalidraw-tab-annotation')} key="1">
+                <div className="fill-width annotation-wrapper">
+                  {
+                    itemData && itemData.length > 0 && itemData.reduce((total, currentVal) => {
+                        let count = currentVal.attachments.reduce((total1, currentVal1) => {
+                          return total1 + currentVal1.annotations.length;
+                        }, 0)
+                        return total + count;
+                      }, 0) > 0 ? itemData.map((item, index) => {
+                        return item.attachments.length === 0 ? <></> : <div key={index} className="item">
+                          {(() => {
+                            if (item.id) {
+                              return <div className="item-title">
+                              <div className="item-title-bar">
+                                <img className="item-icon" src={`chrome://zotero/skin/treeitem-${item.itemType}.png`}></img> <a href={item.link} title={item.title}><span>{item.title}</span></a>
+                              </div>
+                              <Space size={2}>
+                                <a onClick={() => onItemAddElement(item)}><img className="button-icon" src="chrome://zotero/skin/plus.png"></img></a>
+                              </Space>
+                            </div>
+                            }
+                          })()}
+                          <div className="annotation-list">
+                            {
+                              item.attachments.map(attachment => {
+                                return attachment.annotations.map(annotation => {
+                                  return <Card key={annotation.id} className="annotation-card" size="small" extra={<div><a onClick={() => onAnnotationAddElement(annotation)}><img className="button-icon" src="chrome://zotero/skin/plus.png"></img></a></div>} title={<a href={annotation.link}>
+                                    {(() => {
+                                      switch (annotation.annotationType) {
+                                        case 'highlight':
+                                          return <svg className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path d="M0 128 1024 128 1024 256 0 256 0 128ZM0 448 1024 448 1024 576 0 576 0 448ZM0 768 704 768 704 896 0 896 0 768Z" p-id="2110" fill={annotation.annotationColor}></path></svg>
+                                        case 'note':
+                                          return <svg t="1653009941000" className="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2917" width="12" height="12"><path d="M768 832H256V192h512v640m0-704H256c-35.3 0-64 28.7-64 64v640c0 35.3 28.7 64 64 64h512c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64z" p-id="2918" fill={annotation.annotationColor}></path><path d="M576.1 352c0 17.7-14.3 32-32 32h-192c-17.7 0-32-14.3-32-32s14.3-32 32-32h192c17.7 0 32 14.3 32 32zM704 480c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h320c17.7 0 32 14.3 32 32zM704 608c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h320c17.7 0 32 14.3 32 32z" p-id="2919" fill={annotation.annotationColor}></path></svg>
+                                        case 'image':
+                                          return <svg className="icon" t="1652973021010" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1352" width="10" height="10"><path d="M939.625 13.598c12.7 0 23.062 10.467 23.062 23.165v500H916.53V108.352c0-26.793-21.734-48.563-48.493-48.563H104.99c-26.758 0-48.492 21.77-48.492 48.563v715.462c0 26.791 21.733 48.563 48.492 48.563h428.587v46.19H33.437c-12.732 0-23.096-10.468-23.096-23.165V36.763c0-12.698 10.362-23.165 23.096-23.165h906.188" p-id="1353" fill={annotation.annotationColor}></path><path d="M821.719 583.158V774.06h190.796v46.051H821.719v190.902h-46.156V820.109H584.766v-46.051h190.797v-190.9h46.156m-508.06-377.34h0.35l0.174 0.14c9.209 15.071 81.601 134.386 137.455 226.766l20.232 33.214 21.421-32.375a40966.633 40966.633 0 0 1 77.241-116.942c22.256 33.631 115.058 174.295 143.314 217.276H114.175c17.723-30.144 189.471-312.868 198.683-327.798 0-0.001 0.172-0.281 0.801-0.281" p-id="1354" fill={annotation.annotationColor}></path></svg>
+                                      }
+                                    })()}
+                                    <span> {_l10n.formatValueSync('zotero-excalidraw-page')} {annotation.annotationPageLabel}</span></a>}>
+                                    <div className="annotation-card-body">
+                                      <div className="annotation-card-body-side" style={{ backgroundColor: annotation.annotationColor }}></div>
+                                      <div>{(() => {
+                                        switch (annotation.annotationType) {
+                                          case 'highlight':
+                                            return annotation.annotationText
+                                          case 'note':
+                                            return annotation.annotationComment
+                                          case 'image':
+                                            return <img width="100%" src={annotation.annotationImage} />
+                                        }
+                                      })()
+                                      }</div>
+                                    </div>
+                                  </Card>
+                                })
+                              })
+                            }
+                          </div>
+                        </div>
+                      }) : <Empty description={_l10n.formatValueSync('zotero-excalidraw-tab-annotation-empty')} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  }
+                </div>
+              </TabPane>
+              <TabPane tab={_l10n.formatValueSync('zotero-excalidraw-tab-note')} key="2">
+                <div className="fill-width note-wrapper">
+                  {
+                    itemData && itemData.length > 0 && itemData.reduce((total, currentVal) => {
+                        return total + currentVal.notes.length;
+                      }, 0) > 0 ? itemData.map((item, index) => {
+                      return item.notes.length === 0 ? <></> : <div key={index} className="item">
+                        {(() => {
+                          if (item.id) {
+                            return <div className="item-title">
+                                <div className="item-title-bar">
+                                  <img className="item-icon" src={`chrome://zotero/skin/treeitem-${item.itemType}.png`}></img> <a href={item.link} title={item.title}><span>{item.title}</span></a>
+                                </div>
+                                <Space size={2}>
+                                  <a onClick={() => onItemAddElement(item)}><img className="button-icon" src="chrome://zotero/skin/plus.png"></img></a>
+                                </Space>
+                              </div>
+                            }
+                          })()}
+                        <div className="note-list">
+                          {
+                            item.notes.map(note => {
+                              return <Card key={note.id} className="note-card" size="small" extra={<div><a onClick={() => onNoteAddElement(note)}><img className="button-icon" src="chrome://zotero/skin/plus.png"></img></a></div>} title={<a href={note.link}><img className="note-icon" src="chrome://zotero/skin/treeitem-note.png"></img> <span>{note.title}</span></a>}><div dangerouslySetInnerHTML={{ __html: note.note }}></div></Card>
+                            })
+                          }
+                        </div>
+                      </div>
+                    }) : <Empty description={_l10n.formatValueSync('zotero-excalidraw-tab-note-empty')}  image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  }
+                </div>
+              </TabPane>
+            </Tabs>
+          </Sider>
+          
+          <Spin spinning={spinning} fullscreen />
+
+          <Modal keyboard={false} className="option-modal" title={_l10n.formatValueSync('zotero-excalidraw-settings')} footer={null} width="800px" visible={isOptionModalVisible} onCancel={() => setIsOptionModalVisible(false)}>
+            <Tabs tabPosition="left">
+              <TabPane tab={_l10n.formatValueSync('zotero-excalidraw-normal')} key="1">
+                <Form
+                  labelCol={{ span: 4 }}
+                  wrapperCol={{ span: 20 }}
+                  initialValues={_profiles.normal}
+                  onValuesChange={onFormNormalChange}
+                  layout="horizontal"
+                  colon={false}
+                >
+                  <Form.Item name="treeWidth" label={_l10n.formatValueSync('zotero-excalidraw-left-side-width')}>
+                    <InputNumber step={5} min={100} max={500} />
+                  </Form.Item>
+                  <Form.Item name="paneWidth" label={_l10n.formatValueSync('zotero-excalidraw-right-side-width')}>
+                    <InputNumber step={5} min={100} max={500} />
+                  </Form.Item>
+                  <Form.Item name="savePreviewEnabled" label={_l10n.formatValueSync('zotero-excalidraw-save-preview')} valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                  <Form.Item name="gridModeEnabled" label={_l10n.formatValueSync('zotero-excalidraw-grid-mode')} valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                  <Form.Item name="theme" label={_l10n.formatValueSync('zotero-excalidraw-theme')}>
+                    <Radio.Group>
+                      <Radio.Button value="light">{_l10n.formatValueSync('zotero-excalidraw-theme-light')}</Radio.Button>
+                      <Radio.Button value="dark">{_l10n.formatValueSync('zotero-excalidraw-theme-dark')}</Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item name="exportWithDarkMode" label={_l10n.formatValueSync('zotero-excalidraw-export-dark')} valuePropName="checked">
+                    <Switch />
+                  </Form.Item>
+                </Form>
+              </TabPane>,
+              <TabPane tab={_l10n.formatValueSync('zotero-excalidraw-item-default-style')} key="2">
+                {
+                  settingsForm(itemDefaultStyleForm, itemDefaultStyle, onItemDefaultStyleChange)
+                }
+              </TabPane>,
+              <TabPane tab={_l10n.formatValueSync('zotero-excalidraw-annotation-default-style')} key="3">
+                {
+                  settingsForm(annotationDefaultStyleForm, annotationDefaultStyle, onAnnotationDefaultStyleChange, true)
+                }
+              </TabPane>,
+              <TabPane tab={_l10n.formatValueSync('zotero-excalidraw-note-default-style')} key="4">
+                {
+                  settingsForm(noteDefaultStyleForm, noteDefaultStyle, onNoteDefaultStyleChange)
+                }
+              </TabPane>
+            </Tabs>
+          </Modal>
+          </Layout>;
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById("app"));
+      root.render(React.createElement(App));
+    }
+  </script>
+</body>
+
+</html>
