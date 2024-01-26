@@ -3,9 +3,9 @@
     "zotero-excalidraw@zotero.org": {
       "updates": [
         {
-          "version": "1.0.0",
-          "update_link": "https://github.com/018/zotero-excalidraw/releases/latest/download/zotero-excalidraw-1.0.0.xpi",
-          "update_hash": "sha256:e64104e3d5d34cd08225762c37cdd2dbf8e262b566c319de6fe395fa864b500d",
+          "version": "1.0.1",
+          "update_link": "https://github.com/018/zotero-excalidraw/releases/latest/download/zotero-excalidraw-1.0.1.xpi",
+          "update_hash": "sha256:4f46f6aeeb56493dda33b5dc2c08ccf87e8ebb6056f5eb1afa21efff786f1082",
           "applications": {
             "zotero": {
               "strict_min_version": "6.999"

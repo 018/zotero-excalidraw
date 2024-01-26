@@ -5,7 +5,7 @@ rm -rf build
 mkdir build
 
 cd src
-zip -r ../build/zotero-excalidraw-1.0.0.xpi *
+zip -r ../build/zotero-excalidraw-1.0.1.xpi *
 cd ../build
 
-jq ".addons[\"zotero-excalidraw@zotero.org\"].updates[0].update_hash = \"sha256:`shasum -a 256 zotero-excalidraw-1.0.0.xpi | cut -d' ' -f1`\"" ../updates.json.tmpl > ../updates.json
+jq ".addons[\"zotero-excalidraw@zotero.org\"].updates[0].update_hash = \"sha256:`shasum -a 256 zotero-excalidraw-1.0.1.xpi | cut -d' ' -f1`\"" ../updates.json.tmpl > ../updates.json

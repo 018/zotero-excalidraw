@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "ZoteroExcalidraw",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Writing card is more smooth, reading card is more smooth.",
 	"homepage_url": "https://github.com/018/zotero-excalidraw",
 	"author": "018",

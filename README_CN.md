@@ -12,7 +12,6 @@
     <img src="https://img.shields.io/github/downloads/018/zotero-excalidraw/total?label=Downloads" alt="element-ui">
   </a>
 </p>
-
 [English](https://github.com/018/zotero-excalidraw) | 简体中文
 
 ## 介绍
@@ -61,4 +60,4 @@ zotero-excalidraw是Zotero集成了excalidraw（https://github.com/excalidraw/ex
 
 [MIT](./LICENSE)
 
-Copyright (c) 2020-2023 018
+Copyright (c) 2020-2024 018
