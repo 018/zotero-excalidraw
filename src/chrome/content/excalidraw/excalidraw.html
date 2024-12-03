@@ -533,7 +533,7 @@
   <div id="app"></div>
 
   <script type="text/babel" data-type="module">
-    Cu.import("resource://gre/modules/osfile.jsm");
+    // Cu.import("resource://gre/modules/osfile.jsm");
     const { useEffect, useState, useRef, useCallback } = React;
     const { Layout, Modal, Form, Tabs, Input, Spin, Tree, Result, TabPane, Empty, Space, Card, Button, Progress, Divider, message } = antd;
     const { Menu, Dropdown, PlusCircleOutlined, InputNumber, Switch, Radio, Slider } = antd;
@@ -782,6 +782,9 @@
               file.QueryInterface(Ci.nsIFile);
               
               const content = {
+                type: "excalidraw",
+                version: 2,
+                source: "https://excalidraw.com",
                 elements: excalidrawAPI.getSceneElements(),
                 appState: {
                   viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
@@ -974,6 +977,9 @@
               file.QueryInterface(Ci.nsIFile);
               
               const content = {
+                type: "excalidraw",
+                version: 2,
+                source: "https://excalidraw.com",
                 elements: excalidrawAPI.getSceneElements(),
                 appState: {
                   viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
@@ -1004,6 +1010,9 @@
               file.QueryInterface(Ci.nsIFile);
               
               const content = {
+                type: "excalidraw",
+                version: 2,
+                source: "https://excalidraw.com",
                 elements: excalidrawAPI.getSceneElements(),
                 appState: {
                   viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
@@ -1026,6 +1035,9 @@
           }
           
           const content = {
+            type: "excalidraw",
+            version: 2,
+            source: "https://excalidraw.com",
             elements: excalidrawAPI.getSceneElements(),
             appState: {
               viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
@@ -1071,6 +1083,9 @@
           }
           
           await exportToClipboard({
+            type: "excalidraw",
+            version: 2,
+            source: "https://excalidraw.com",
             elements: excalidrawAPI.getSceneElements(),
             appState: excalidrawAPI.getAppState(),
             files: excalidrawAPI.getFiles(),
@@ -1085,7 +1100,11 @@
             return
           }
 
-          var content = {};
+          var content = {
+            type: "excalidraw",
+            version: 2,
+            source: "https://excalidraw.com"
+          };
           content.elements = excalidrawAPI.getSceneElements();
           content.appState = {
             viewBackgroundColor: excalidrawAPI.getAppState().viewBackgroundColor,
@@ -1131,6 +1150,9 @@
 
           saving.current = true;
           const content = {
+            type: "excalidraw",
+            version: 2,
+            source: "https://excalidraw.com",
             elements: excalidrawAPI.getSceneElements(),
             scrollToContent: true,
             appState: {

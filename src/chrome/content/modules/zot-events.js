@@ -22,10 +22,10 @@ Zotero.ZoteroExcalidraw.Events = Object.assign(Zotero.ZoteroExcalidraw.Events, {
 		this.refreshStandaloneMenuPopup = refreshStandaloneMenuPopup;
 		this.refreshPaneItemMenuPopup = refreshPaneItemMenuPopup;
 		
-		Zotero.getMainWindow().ZoteroPane.itemsView.waitForLoad().then(function () {
-			Zotero.getMainWindow().Zotero.getMainWindow().ZoteroPane.itemsView.onSelect.addListener(this.itemsViewOnSelect);
-			Zotero.ZoteroExcalidraw.Logger.log('itemsViewOnSelect registered.');
-		}.bind(this));
+		// Zotero.getMainWindow().ZoteroPane.itemsView.waitForLoad().then(function () {
+		// 	Zotero.getMainWindow().Zotero.getMainWindow().ZoteroPane.itemsView.onSelect.addListener(this.itemsViewOnSelect);
+		// 	Zotero.ZoteroExcalidraw.Logger.log('itemsViewOnSelect registered.');
+		// }.bind(this));
 
 		Zotero.getMainWindow().document.getElementById('zotero-items-tree').addEventListener('select', this.itemsViewOnSelect.bind(this), false);
 		Zotero.ZoteroExcalidraw.Logger.log('itemsViewOnSelect registered.');
