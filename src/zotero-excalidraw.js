@@ -155,6 +155,36 @@ Zotero.ZoteroExcalidraw = Object.assign(Zotero.ZoteroExcalidraw, {
 	createPaneMenu() {
 		let root = 'context-pane-add-child-note-button-popup';
 		let elPanePopup = Zotero.getMainWindow().document.getElementById(root);
+		let menuseparator1 = Zotero.ZotCard.Doms.createMainWindowXULMenuSeparator({
+			id: `${root}-zotero-excalidraw-separator1`,
+			parent: elPanePopup
+		});
+		this.storeAddedElement(menuseparator1);
+
+		// zotero-excalidraw
+		menuitem = Zotero.ZotCard.Doms.createMainWindowXULElement('menuitem', {
+			id: `${root}-zotero-excalidraw`,
+			command: () =>{
+				this.attachmentExcalidraw();
+			},
+			attrs: {
+				'data-l10n-id': 'zotero-excalidraw',
+			},
+			parent: elPanePopup
+		});
+		this.storeAddedElement(menuitem);
+	},
+
+	
+	paneCardManager() {
+		var reader = Zotero.ZotCard.Readers.getSelectedReader();
+		if (reader) {
+			let items = [{
+				type: Zotero.ZotCard.Consts.cardManagerType.item,
+				id: Zotero.Items.get(reader.itemID).parentID
+			}];
+			Zotero.ZotCard.Dialogs.openCardManager(items);
+		}
 	},
 
 	createStandaloneMenu() {
@@ -251,6 +281,25 @@ Zotero.ZoteroExcalidraw = Object.assign(Zotero.ZoteroExcalidraw, {
 				}
 			});
 			Zotero.ZoteroExcalidraw.Dialogs.openExcalidrawTab(attachment.id, items);
+		}
+	},
+
+	async attachmentExcalidraw() {
+		var reader = Zotero.ZotCard.Readers.getSelectedReader();
+		if (reader) {
+			let item = Zotero.Items.get(reader.itemID);
+			if (item.isFileAttachment()) {
+				if (item.attachmentContentType === 'application/excalidraw') {
+					Zotero.ZoteroExcalidraw.ExcalidrawUtils.viewExcalidraw(item);
+				} else if (item.attachmentContentType === 'application/pdf') {
+					let collection = Zotero.getMainWindow().ZoteroPane.getSelectedCollection();
+					let attachment = await Zotero.ZoteroExcalidraw.ExcalidrawUtils.create(collection.libraryID, collection, item.parentItem, item.parentItem ? item.parentItem.getDisplayTitle() : item.getDisplayTitle());
+					Zotero.ZoteroExcalidraw.Dialogs.openExcalidrawTab(attachment.id, [{
+						type: 'attachment',
+						id: item.id
+					}]);
+				}
+			}
 		}
 	},
 

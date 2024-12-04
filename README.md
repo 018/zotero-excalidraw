@@ -19,6 +19,9 @@ English | [简体中文](https://github.com/018/zotero-excalidraw/blob/main/READ
 
 zotero-excalidraw  is excalidraw zotero integrates excalidraw (https://github.com/excalidraw/excalidraw), which provides a whiteboard let you create.
 
+## Video
+- [bilibili](https://www.bilibili.com/video/BV1wYi2YeEbK/)
+
 ## Getting started
 
 - Step 1, download the latest version zotero-excalidraw: [Download](https://github.com/018/zotero-excalidraw/releases);

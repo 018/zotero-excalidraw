@@ -24,7 +24,8 @@
     window.EXCALIDRAW_ASSET_PATH = "../modules/";
   </script>
   <!-- <script type="text/javascript" src="../modules/excalidraw.development.js"></script> -->
-  <script type="text/javascript" src="../modules/excalidraw.production.min-0.16.1.js"></script>
+  <!-- <script type="text/javascript" src="../modules/excalidraw.production.min-0.16.1.js"></script> -->
+  <script type="text/javascript" src="../modules/excalidraw.production.min-0.17.6.js"></script>
   <script src="./excalidraw-utils.js"></script>
   <style>
     #app {
@@ -583,7 +584,7 @@
         treeWidth: 300,
         paneWidth: 300,
         theme: "light",
-        savePreviewEnabled: true,
+        savePreviewEnabled: false,
         gridModeEnabled: false,
         exportWithDarkMode: false
       };
@@ -845,9 +846,13 @@
                   let elements = [...excalidrawAPI.getSceneElements()];
                   let exists = 0;
                   exca.elements.forEach(element => {
-                    if (elements.find(e => e.id === element.id)) {
+                    let ele = elements.find(e => e.id === element.id);
+                    if (ele && ele.updated === element.updated) {
                       exists++;
                     } else {
+                      if (ele) {
+                        elements.splice(elements.indexOf(ele), 1);
+                      }
                       elements.push(element);
                     }
                   });
@@ -1164,7 +1169,7 @@
             libraryItems: libraryItems.current
           }
           const blob = await exportToBlob(content);
-          if (_profiles.normal.savePreviewEnabled) {
+          if (false && _profiles.normal.savePreviewEnabled) {
             var reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = function () {
@@ -1755,7 +1760,7 @@
               return {
                 key: `item-${e.id}-${l.libraryID}`,
                 title: e.getDisplayTitle(),
-                icon: <img className="button-icon" src={`chrome://zotero/skin/treeitem-${e.itemType}@2x.png`}></img>,
+                icon: <img className="button-icon" src={`chrome://zotero/skin/item-type/16/light/${e.itemType.replace(/([A-Z])/g, '-$1').toLowerCase()}@2x.svg`}></img>,
                 type: 'item',
                 isLeaf: !e.isRegularItem(),
                 children: [],
@@ -1816,7 +1821,7 @@
                   _children.push({
                     key: `${e.isFileAttachment() ? 'attachment' : 'item'}-${e.id}-${Zotero.Utilities.randomString()}`,
                     title: e.getDisplayTitle(),
-                    icon: e.isFileAttachment() ? <img className="button-icon" src={`chrome://zotero/skin/treeitem-${attachmentItemType(e)}@2x.png`}></img> : <img className="button-icon" src={`chrome://zotero/skin/treeitem-${e.itemType}@2x.png`}></img>,
+                    icon: e.isFileAttachment() ? <img className="button-icon" src={`chrome://zotero/skin/item-type/16/light/${attachmentItemType(e).replace(/([A-Z])/g, '-$1').toLowerCase()}@2x.svg`}></img> : <img className="button-icon" src={`chrome://zotero/skin/item-type/16/light/${e.itemType.replace(/([A-Z])/g, '-$1').toLowerCase()}@2x.svg`}></img>,
                     type: e.isFileAttachment() ? 'attachment' : 'item',
                     isLeaf: !(e.isRegularItem() || e.isFileAttachment()),
                     children: [],
@@ -1904,7 +1909,7 @@
                   _children.push({
                     key: `note-${note.id}-${Zotero.Utilities.randomString()}`,
                     title: note.getDisplayTitle(),
-                    icon: <img className="button-icon" src="chrome://zotero/skin/treeitem-note.png"></img>,
+                    icon: <img className="button-icon" src="chrome://zotero/skin/item-type/16/light/note@2x.svg"></img>,
                     isLeaf: true,
                     type: 'note',
                     extra: {
@@ -1960,7 +1965,7 @@
                   _children.push({
                     key: `attachment-${attachment.id}-${Zotero.Utilities.randomString()}`,
                     title: attachment.getDisplayTitle(),
-                    icon: <img className="button-icon" src={`chrome://zotero/skin/treeitem-${attachmentItemType(attachment)}@2x.png`}></img>,
+                    icon: <img className="button-icon" src={`chrome://zotero/skin/item-type/16/light/${attachmentItemType(attachment).replace(/([A-Z])/g, '-$1').toLowerCase()}@2x.svg`}></img>,
                     disabled: annotations.length === 0,
                     isLeaf: !(attachment.isFileAttachment() && attachment.attachmentContentType === 'application/pdf') || annotations.length === 0 ? true : undefined,
                     type: 'attachment',
@@ -2035,7 +2040,7 @@
             let currentText = current(nodeData);
             return <Dropdown overlay={<Menu>
               <Menu.Item key="0" disabled={nodeData.type !== 'item' && nodeData.type !== 'annotation' && nodeData.type !== 'note'}>
-                <a onClick={() => { onTreeAddExcalidraw(nodeData) }}><img className="zotero-button-icon" src="chrome://zotero/skin/plus.png"></img>  {_l10n.formatValueSync('zotero-excalidraw-add-canvas')}</a>
+                <a onClick={() => { onTreeAddExcalidraw(nodeData) }}><img className="zotero-button-icon" src="chrome://zotero/skin/16/universal/plus.svg"></img>  {_l10n.formatValueSync('zotero-excalidraw-add-canvas')}</a>
               </Menu.Item>
               <Menu.Divider />
               <Menu.Item key="1" onClick={() => {
@@ -2046,7 +2051,7 @@
                 }
                 Zotero.getMainWindow().Zotero_Tabs.select('zotero-pane');
               }}>
-                <a><img className="zotero-button-icon" src="chrome://zotero-excalidraw/content/images/zotero32.png"></img> {_l10n.formatValueSync('zotero-excalidraw-positioning-at-zotero')}</a>
+                <a><img className="zotero-button-icon" src="chrome://zotero/skin/z.svg"></img> {_l10n.formatValueSync('zotero-excalidraw-positioning-at-zotero')}</a>
               </Menu.Item>
             </Menu>} trigger={['click']}>
               <span className="text ant-dropdown-link single-line">
@@ -2100,7 +2105,13 @@
               <Button title={_l10n.formatValueSync('zotero-excalidraw-positioning-at-zotero')} className="button__icon" size="small" onClick={() => {
                 Zotero.getMainWindow().ZoteroPane.selectItem(_attachment.id);
               }}>
-                <img className="zotero-button-icon" src="chrome://zotero-excalidraw/content/images/zotero32.png"></img>
+                <img className="zotero-button-icon" src="chrome://zotero/skin/z.svg"></img>
+              </Button>
+              <Divider type="vertical" />
+              <Button title={_l10n.formatValueSync('zotero-excalidraw-refresh')} className="button__icon" size="small" onClick={() => {
+                load()
+              }}>
+                <img className="zotero-button-icon" src="chrome://zotero/skin/16/universal/sync.svg"></img>
               </Button>
               <Divider type="vertical" />
               <Button title={_l10n.formatValueSync('zotero-excalidraw-hide-left')} className="button__icon" size="small" onClick={() => {
@@ -2492,10 +2503,10 @@
                             if (item.id) {
                               return <div className="item-title">
                               <div className="item-title-bar">
-                                <img className="item-icon" src={`chrome://zotero/skin/treeitem-${item.itemType}.png`}></img> <a href={item.link} title={item.title}><span>{item.title}</span></a>
+                                <img className="item-icon" src={`chrome://zotero/skin/item-type/16/light/${item.itemType.replace(/([A-Z])/g, '-$1').toLowerCase()}.svg`}></img> <a href={item.link} title={item.title}><span>{item.title}</span></a>
                               </div>
                               <Space size={2}>
-                                <a onClick={() => onItemAddElement(item)}><img className="button-icon" src="chrome://zotero/skin/plus.png"></img></a>
+                                <a onClick={() => onItemAddElement(item)}><img className="button-icon" src="chrome://zotero/skin/16/universal/plus.svg"></img></a>
                               </Space>
                             </div>
                             }
@@ -2504,7 +2515,7 @@
                             {
                               item.attachments.map(attachment => {
                                 return attachment.annotations.map(annotation => {
-                                  return <Card key={annotation.id} className="annotation-card" size="small" extra={<div><a onClick={() => onAnnotationAddElement(annotation)}><img className="button-icon" src="chrome://zotero/skin/plus.png"></img></a></div>} title={<a href={annotation.link}>
+                                  return <Card key={annotation.id} className="annotation-card" size="small" extra={<div><a onClick={() => onAnnotationAddElement(annotation)}><img className="button-icon" src="chrome://zotero/skin/16/universal/plus.svg"></img></a></div>} title={<a href={annotation.link}>
                                     {(() => {
                                       switch (annotation.annotationType) {
                                         case 'highlight':
@@ -2551,10 +2562,10 @@
                           if (item.id) {
                             return <div className="item-title">
                                 <div className="item-title-bar">
-                                  <img className="item-icon" src={`chrome://zotero/skin/treeitem-${item.itemType}.png`}></img> <a href={item.link} title={item.title}><span>{item.title}</span></a>
+                                  <img className="item-icon" src={`chrome://zotero/skin/item-type/16/light/${item.itemType.replace(/([A-Z])/g, '-$1').toLowerCase()}.svg`}></img> <a href={item.link} title={item.title}><span>{item.title}</span></a>
                                 </div>
                                 <Space size={2}>
-                                  <a onClick={() => onItemAddElement(item)}><img className="button-icon" src="chrome://zotero/skin/plus.png"></img></a>
+                                  <a onClick={() => onItemAddElement(item)}><img className="button-icon" src="chrome://zotero/skin/16/universal/plus.svg"></img></a>
                                 </Space>
                               </div>
                             }
@@ -2562,7 +2573,7 @@
                         <div className="note-list">
                           {
                             item.notes.map(note => {
-                              return <Card key={note.id} className="note-card" size="small" extra={<div><a onClick={() => onNoteAddElement(note)}><img className="button-icon" src="chrome://zotero/skin/plus.png"></img></a></div>} title={<a href={note.link}><img className="note-icon" src="chrome://zotero/skin/treeitem-note.png"></img> <span>{note.title}</span></a>}><div dangerouslySetInnerHTML={{ __html: note.note }}></div></Card>
+                              return <Card key={note.id} className="note-card" size="small" extra={<div><a onClick={() => onNoteAddElement(note)}><img className="button-icon" src="chrome://zotero/skin/16/universal/plus.svg"></img></a></div>} title={<a href={note.link}><img className="note-icon" src="chrome://zotero/skin/item-type/16/light/note@2x.svg"></img> <span>{note.title}</span></a>}><div dangerouslySetInnerHTML={{ __html: note.note }}></div></Card>
                             })
                           }
                         </div>
@@ -2592,9 +2603,6 @@
                   </Form.Item>
                   <Form.Item name="paneWidth" label={_l10n.formatValueSync('zotero-excalidraw-right-side-width')}>
                     <InputNumber step={5} min={100} max={500} />
-                  </Form.Item>
-                  <Form.Item name="savePreviewEnabled" label={_l10n.formatValueSync('zotero-excalidraw-save-preview')} valuePropName="checked">
-                    <Switch />
                   </Form.Item>
                   <Form.Item name="gridModeEnabled" label={_l10n.formatValueSync('zotero-excalidraw-grid-mode')} valuePropName="checked">
                     <Switch />

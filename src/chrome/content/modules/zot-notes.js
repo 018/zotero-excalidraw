@@ -480,7 +480,7 @@ Zotero.ZoteroExcalidraw.Notes = Object.assign(Zotero.ZoteroExcalidraw.Notes, {
   grabNoteContentHtml(html) {
     let title = Zotero.Utilities.Item.noteToTitle(html);
     if (title) {
-      let matchs = title.match(/./g);
+      let matchs = title.replace(/[<>  ]/g, '').match(/./g);
       Zotero.ZoteroExcalidraw.Logger.log(matchs);
       
       if (matchs && matchs.length > 0) {
@@ -491,19 +491,6 @@ Zotero.ZoteroExcalidraw.Notes = Object.assign(Zotero.ZoteroExcalidraw.Notes, {
       } else {
         return html;
       }
-    } else {
-      return html;
-    }
-  },
-  
-  // 抓取除去标题的内容HTML
-  grabNoteContentHtml(html) {
-    let title = Zotero.Utilities.Item.noteToTitle(html);
-    if (title) {
-      let reg = '.*?' + title.match(/[\u4e00-\u9fa5|0-9|a-z|A-Z]/g).join('.*?') + '.*?\\n';
-      let text = html.replace(/(<\/(h\d|p|div)+>)/g, '$1\n');
-      
-      return text.replace(new RegExp(reg), '');
     } else {
       return html;
     }

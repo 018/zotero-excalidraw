@@ -20,6 +20,7 @@ zotero-excalidraw-tab-note-empty = 暂无笔记数据
 
 
 zotero-excalidraw-add-canvas  = 添加到画布
+zotero-excalidraw-refresh = 刷新
 zotero-excalidraw-positioning-at-zotero = 在Zotero定位
 zotero-excalidraw-hide-left = 隐藏左侧
 zotero-excalidraw-hide-right = 隐藏右侧
@@ -28,7 +29,7 @@ zotero-excalidraw-copy-successful = 复制成功
 
 zotero-excalidraw-successful = 保存成功
 zotero-excalidraw-open = 打开
-zotero-excalidraw-open-ask = 该操作会先情况画布内容，确认打开？
+zotero-excalidraw-open-ask = 该操作会先清空画布内容，确认打开？
 zotero-excalidraw-import = 导入
 zotero-excalidraw-import-successful = 导入成功 { $ok } 个元素，{ $exists } 个元素已经存在。
 
@@ -43,8 +44,7 @@ zotero-excalidraw-current = (当前)
 
 zotero-excalidraw-normal = 常规
 zotero-excalidraw-left-side-width = 左侧宽度
-zotero-excalidraw-right-side-width = 左侧宽度
-zotero-excalidraw-save-preview = 保存预览
+zotero-excalidraw-right-side-width = 右侧宽度
 zotero-excalidraw-grid-mode = 网格
 zotero-excalidraw-theme = 主题
 zotero-excalidraw-theme-light = 普通模式

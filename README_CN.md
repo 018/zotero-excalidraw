@@ -18,6 +18,9 @@
 
 zotero-excalidraw是Zotero集成了excalidraw（https://github.com/excalidraw/excalidraw），它提供了一块白板任由你创作。
 
+## 视频
+- [bilibili](https://www.bilibili.com/video/BV1wYi2YeEbK/)
+
 ## 快速开始
 
 - 第一步、下载zotero-excalidraw最新版本：[点击下载](https://github.com/018/zotero-excalidraw/releases)；

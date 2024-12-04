@@ -20,6 +20,7 @@ zotero-excalidraw-tab-note-empty = No note data
 
 
 zotero-excalidraw-add-canvas  = Add to canvas
+zotero-excalidraw-refresh = Refresh
 zotero-excalidraw-positioning-at-zotero = Positioning at Zotero
 zotero-excalidraw-hide-left = Hide left
 zotero-excalidraw-hide-right = Hide right
@@ -44,7 +45,6 @@ zotero-excalidraw-current = (current)
 zotero-excalidraw-normal = Normal
 zotero-excalidraw-left-side-width = Left side width
 zotero-excalidraw-right-side-width = Right side width
-zotero-excalidraw-save-preview = Save preview
 zotero-excalidraw-grid-mode = Grid
 zotero-excalidraw-theme = Theme
 zotero-excalidraw-theme-light = ight
