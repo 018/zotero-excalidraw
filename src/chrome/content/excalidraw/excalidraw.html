@@ -1755,7 +1755,24 @@
               })
             };
 
-            let rets = await Zotero.Items.getAll(l.libraryID, true, false).filter(e => (e.isRegularItem() || e.isNote()) && e.getCollections().length === 0);
+            // let rets = await Zotero.Items.getAll(l.libraryID, true, false).filter(e => (e.isRegularItem() || e.isNote()) && e.getCollections().length === 0);
+            let allItems = await Zotero.Items.getAll(l.libraryID, true, false);
+            let rets = [];
+
+            for (let e of allItems) {
+                if (e.isRegularItem() || e.isNote()) {
+                    try {
+                        // Try to get collections directly, catch if data not loaded
+                        if (e.getCollections().length === 0) {
+                            rets.push(e);
+                        }
+                    } catch (error) {
+                        // Skip items where collections can't be accessed (like feed items)
+                        console.warn('Skipping item due to collections access error:', e.id, error.message);
+                        continue;
+                    }
+                }
+            }
             node.children.push(...rets.map(e => {
               return {
                 key: `item-${e.id}-${l.libraryID}`,

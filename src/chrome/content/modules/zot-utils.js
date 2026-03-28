@@ -217,14 +217,6 @@ Zotero.ZoteroExcalidraw.Utils = Object.assign(Zotero.ZoteroExcalidraw.Utils, {
     return ww.openWindow(null, uri, null, features ? features : `menubar=yes,toolbar=no,location=no,scrollbars,centerscreen,resizable,height=${screen.availHeight},width=${screen.availWidth}`, null)
   },
 
-  async loadAnnotationImg(annotation) {
-    let file = Zotero.Annotations.getCacheImagePath(annotation)
-    if (await Zotero.getMainWindow().OS.File.exists(file)) {
-      let img = await Zotero.File.generateDataURI(file, 'image/png')
-      return img
-    }
-  },
-
   resolveNote(note) {
     let content = ''
     let title = ''
@@ -244,9 +236,25 @@ Zotero.ZoteroExcalidraw.Utils = Object.assign(Zotero.ZoteroExcalidraw.Utils, {
 
   async loadAnnotationImg(annotation) {
     let file = Zotero.Annotations.getCacheImagePath(annotation);
-    if (await Zotero.getMainWindow().OS.File.exists(file)) {
-      let img = await Zotero.File.generateDataURI(file, 'image/png');
-      return img;
+    
+    try {
+      // First try Zotero.File API
+      if (await Zotero.File.pathExists(file)) {
+        let img = await Zotero.File.generateDataURI(file, 'image/png');
+        return img;
+      }
+    } catch (e) {
+      // Fallback to IOUtils if Zotero.File.pathExists is not available
+      // Zotero.error(e);
+      try {
+        await IOUtils.stat(file);
+        let img = await Zotero.File.generateDataURI(file, 'image/png');
+        return img;
+      } catch (statError) {
+        // File doesn't exist
+        return null;
+      }
     }
+    return null;
   }
 });

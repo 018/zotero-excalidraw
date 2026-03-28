@@ -5,7 +5,7 @@
         {
           "version": "1.1.0",
           "update_link": "https://github.com/018/zotero-excalidraw/releases/latest/download/zotero-excalidraw-1.1.0.xpi",
-          "update_hash": "sha256:d949325338ce939e5bdf6f695285a6b159cfd8d71a5691fe95c4d8641c7372fb",
+          "update_hash": "sha256:1d7394cbc9549058732db53c223aa0b34dc8d223b450fa2756aee86a0f02ff42",
           "applications": {
             "zotero": {
               "strict_min_version": "6.999"

@@ -1,6 +1,6 @@
 if (!Zotero.ZoteroExcalidraw) Zotero.ZoteroExcalidraw = {};
 if (!Zotero.ZoteroExcalidraw.Dialogs) Zotero.ZoteroExcalidraw.Dialogs = {};
-Components.utils.import('resource://gre/modules/Services.jsm');
+// Components.utils.import('resource://gre/modules/Services.jsm');
 
 Zotero.ZoteroExcalidraw.Dialogs = Object.assign(Zotero.ZoteroExcalidraw.Dialogs, {
 
