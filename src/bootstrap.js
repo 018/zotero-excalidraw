@@ -63,7 +63,7 @@ async function startup({ id, version, rootURI }) {
 }
 
 function onMainWindowLoad({ window }) {
-	Zotero.ZoteroExcalidraw.addToWindow(window);
+	Zotero.ZoteroExcalidraw.initWindow(window);
 }
 
 function onMainWindowUnload({ window }) {

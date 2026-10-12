@@ -1755,7 +1755,8 @@
               })
             };
 
-            let rets = await Zotero.Items.getAll(l.libraryID, true, false).filter(e => (e.isRegularItem() || e.isNote()) && e.getCollections().length === 0);
+            let rets = await Zotero.Items.getAll(l.libraryID, true, false);
+            rets = rets.filter(e => (e.isRegularItem() || e.isNote()) && e.getCollections().length === 0);
             node.children.push(...rets.map(e => {
               return {
                 key: `item-${e.id}-${l.libraryID}`,

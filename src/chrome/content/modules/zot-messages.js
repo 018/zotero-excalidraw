@@ -3,7 +3,7 @@ if (!Zotero.ZoteroExcalidraw.Messages) Zotero.ZoteroExcalidraw.Messages = {};
 
 Zotero.ZoteroExcalidraw.Messages = Object.assign(Zotero.ZoteroExcalidraw.Messages, {
 	init() {
-    Components.utils.import("resource://gre/modules/Services.jsm");
+    // Components.utils.import("resource://gre/modules/Services.jsm");
 		Zotero.ZoteroExcalidraw.Logger.log('Zotero.ZoteroExcalidraw.Messages inited.');
 	},
 

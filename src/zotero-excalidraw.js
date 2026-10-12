@@ -18,21 +18,26 @@ Zotero.ZoteroExcalidraw = Object.assign(Zotero.ZoteroExcalidraw, {
 		this.rootURI = rootURI;
 		this.initialized = true;
 
+		this.initWindow(Zotero.getMainWindow());
+		Zotero.ZoteroExcalidraw.Logger.log('Zotero.ZoteroExcalidraw inited.');
+	},
+
+	initWindow(window) {
 		// Add a stylesheet to the main Zotero pane
-		let link1 = Zotero.getMainWindow().document.createElement('link');
+		let link1 = window.document.createElement('link');
 		link1.id = 'zotero-excalidraw-stylesheet';
 		link1.type = 'text/css';
 		link1.rel = 'stylesheet';
 		link1.href = this.rootURI + `style-${Zotero.isMac ? 'mac' : 'win'}.css`;
-		Zotero.getMainWindow().document.documentElement.appendChild(link1);
+		window.document.documentElement.appendChild(link1);
 		this.storeAddedElement(link1);
 
 		// Use Fluent for localization
-		Zotero.getMainWindow().MozXULElement.insertFTLIfNeeded("zotero-excalidraw.ftl");
+		window.MozXULElement.insertFTLIfNeeded("zotero-excalidraw.ftl");
 
 		this.registerEvent();
 
-		Zotero.getMainWindow().ZoteroPane.viewItems = Zotero.Promise.coroutine(function* (items, event) {
+		window.ZoteroPane.viewItems = Zotero.Promise.coroutine(function* (items, event) {
 			Zotero.ZoteroExcalidraw.Logger.log('ZoteroPane.viewItems');
 			for (let i = 0; i < items.length; i++) {
 				let item = items[i];
@@ -86,8 +91,6 @@ Zotero.ZoteroExcalidraw = Object.assign(Zotero.ZoteroExcalidraw, {
 				}
 			}
 		});
-
-		Zotero.ZoteroExcalidraw.Logger.log('Zotero.ZoteroExcalidraw inited.');
 	},
 	
 	createCollectionMenu() {
